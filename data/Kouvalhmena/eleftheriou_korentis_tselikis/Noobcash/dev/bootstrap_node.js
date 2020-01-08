@@ -40,7 +40,7 @@ var starter_transactions = 0;
 var input_transactions = [];
 
 nodes_stats.set(node_uid_str, {
-	url: noobcash.currentNodeUrl, 
+	url: noobcash.currentNodeUrl,
 	publicKey: nodeAddress
 });
 
@@ -67,7 +67,7 @@ app.get('/new_transaction', function(req, res){
 	const RegisterOptions = {
 		uri: url + '/transaction/broadcast',
 		method: 'POST',
-		body: { 
+		body: {
 			id_num: recipient,
 			amount: amount
 		},
@@ -78,7 +78,7 @@ app.get('/new_transaction', function(req, res){
 		res.send({ amount }) ;
 	})
 	.catch( err => {
-		return err 
+		return err
 	});
 });
 
@@ -135,7 +135,7 @@ mine_block = function(){
 	//const newBlock = noobcash.createNewBlock(nonce, previousBlockHash, blockHash, blockTransactions, currentBlockData['timestamp']);
 	const results = perf.stop("Mining Block");
 	console.log("Mining Block No." +  currentBlockData['index'].toString() + ":", results.time);
-	
+
 	const newBlock = {
 		index: noobcash.chain.length + 1,
 		timestamp: currentBlockData['timestamp'],
@@ -157,7 +157,7 @@ mine_block = function(){
 
 		requestPromises.push(rp(requestOptions));
 	});
-	
+
 	const requestOptions_self = {
 			uri: noobcash.currentNodeUrl + '/receive-new-block',
 			method: 'POST',
@@ -166,7 +166,7 @@ mine_block = function(){
 	};
 
 	requestPromises.push(rp(requestOptions_self));
-	
+
 	Promise.all(requestPromises)
 	.then(data => {
 		console.log("Block transmitted");
@@ -247,7 +247,7 @@ NBC_giveaway = function(iter, id) {
 			},
 			json: true
 		};
-					
+
 		rp(RegisterOptions)
 		.then((data) => {
 			NBC_giveaway(iter - 1, id + 1 );
@@ -266,7 +266,7 @@ execute_input_transactions = function(curr, end) {
 			},
 			json: true
 		};
-					
+
 		rp(RegisterOptions)
 		.then((data) => {
 			execute_input_transactions(curr + 1, end);
@@ -276,7 +276,7 @@ execute_input_transactions = function(curr, end) {
 
 // get wallets
 app.get('/wallets', function (req, res) {
-	
+
 	var wall = [] ;
 	wallets.forEach((value, key) => {
 		wall.push({key, value});
@@ -320,7 +320,7 @@ app.post('/add_to_pending', function(req, res) {
 	//change sender's wallet
 	wallets.get(newTransaction['sender_address']).splice(0,spent_count);
 	wallets.get(newTransaction['sender_address']).push(newTransaction['transaction_outputs'][1]);
-	
+
  	curr_capacity = curr_capacity + 1 ;
 	res.send("1");
 	if( curr_capacity >= capacity ){
@@ -389,7 +389,7 @@ app.post('/transaction/broadcast', function(req, res) {
 				})
 				.catch(err => {
 					console.log("err1.2");
-				});			
+				});
 				noobcash.addTransactionToPendingTransactions(newTransaction);
 				starter_transactions = (starter_transactions + 1)%(10000);
 				//change receiver's wallet
@@ -398,7 +398,7 @@ app.post('/transaction/broadcast', function(req, res) {
 				wallets.get(newTransaction['sender_address']).splice(0,spent_count);
 				wallets.get(newTransaction['sender_address']).push(newTransaction['transaction_outputs'][1]);
 				curr_capacity = curr_capacity + 1 ;
-					
+
 				//if capacity full
 				//mine...
 				if( curr_capacity >= capacity ){
@@ -420,9 +420,9 @@ app.post('/receive-new-block', function(req, res) {
 	const newBlock = req.body.newBlock;
 	const lastBlock = noobcash.getLastBlock();
 	const correctIndex = lastBlock['index'] + 1 === newBlock['index'];
-	
+
 	if(correctIndex){
-		const correctHash = noobcash.validate_block(newBlock, lastBlock, difficulty, difficulty_string); 
+		const correctHash = noobcash.validate_block(newBlock, lastBlock, difficulty, difficulty_string);
 
 		if (correctHash) {
 			noobcash.chain.push(newBlock);
@@ -508,7 +508,7 @@ app.post('/register-at-bootstrap', function(req, res){
 						nodes_stats: nodes_stats,
 						networkNodes: noobcash.networkNodes,
 						wallets: wallets,
-						blockchain: noobcash.chain	
+						blockchain: noobcash.chain
 					},
 					json: true
 				};
@@ -517,9 +517,9 @@ app.post('/register-at-bootstrap', function(req, res){
 				});
 
 				Promise.all(regNodesPromises)
-				.then(data => { 
+				.then(data => {
 					console.log("All Nodes Registered");
-					
+
 					data.forEach((msg) => {
 						if(msg === "Error"){
 							console.log("Fatal Error: Chain Not Valid");
@@ -565,7 +565,7 @@ app.listen(port, function() {
 	console.log(`Listening on port ${port}...`);
 });
 
-const input_file = '/home/user/Noobcash/dev/' + node_uid_str + '.txt';
+const input_file = './dev/' + node_uid_str + '.txt';
 
 var data = fs.readFileSync(input_file,'utf8');
 

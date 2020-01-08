@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bootstrap_node": "nodemon --watch dev -e js dev/bootstrap_node.js 3001 http://192.168.0.2:3001 10 10 4",
+    "bootstrap_node": "nodemon --watch dev -e js dev/bootstrap_node.js 3000 http://localhost:3000 10 10 4",
     "node_1": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 3 4 4",
     "node_2": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003 3 4 4",
-    "node_4": "nodemon --watch dev -e js dev/networkNode.js 3002 http://192.168.0.2:3002 1 10 4",
+    "node_4": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 1 10 4",
     "node_5": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 3 4 4",
     "node_6": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003 3 4 4",
-    "node_7": "nodemon --watch dev -e js dev/networkNode.js 3002 http://192.168.0.2:3002 1 10 4",
+    "node_7": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 1 10 4",
     "node_8": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 3 4 4",
     "node_9": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003 3 4 4"
   },

@@ -65,7 +65,7 @@ Promise.all(reg_promise)
 app.post('/get_uid', function(req, res){
 	res.send();
 	node_uid_str = req.body.uid.toString() ;
-	const input_file = '/home/user/Noobcash/dev/' + node_uid_str + '.txt';
+	const input_file = './dev/' + node_uid_str + '.txt';
 
 	var data = fs.readFileSync(input_file,'utf8');
 
@@ -86,7 +86,7 @@ app.get('/new_transaction', function(req, res){
 	const RegisterOptions = {
 		uri: url + '/transaction/broadcast',
 		method: 'POST',
-		body: { 
+		body: {
 			id_num: recipient,
 			amount: amount
 		},
@@ -97,7 +97,7 @@ app.get('/new_transaction', function(req, res){
 		res.send({ amount }) ;
 	})
 	.catch( err => {
-		return err 
+		return err
 	});
 });
 
@@ -176,7 +176,7 @@ mine_block = function(){
 
 		requestPromises.push(rp(requestOptions));
 	});
-	
+
 	const requestOptions_self = {
 			uri: noobcash.currentNodeUrl + '/receive-new-block',
 			method: 'POST',
@@ -185,7 +185,7 @@ mine_block = function(){
 	};
 
 	requestPromises.push(rp(requestOptions_self));
-	
+
 	Promise.all(requestPromises)
 	.then(data => {
 		console.log("Block transmitted");
@@ -268,7 +268,7 @@ NBC_giveaway = function(iter, id) {
 			},
 			json: true
 		};
-					
+
 		rp(RegisterOptions)
 		.then((uid) => {
 			NBC_giveaway(iter - 1, id + 1 );
@@ -287,7 +287,7 @@ execute_input_transactions = function(curr, end) {
 			},
 			json: true
 		};
-	
+
 		rp(RegisterOptions)
 		.then((data) => {
 			execute_input_transactions(curr + 1, end);
@@ -298,7 +298,7 @@ execute_input_transactions = function(curr, end) {
 
 // get wallets
 app.get('/wallets', function (req, res) {
-	
+
 	var wall = [] ;
 	wallets.forEach((value, key) => {
 		wall.push({key, value});
@@ -343,7 +343,7 @@ app.post('/add_to_pending', function(req, res) {
 	//change sender's wallet
 	wallets.get(newTransaction['sender_address']).splice(0,spent_count);
 	wallets.get(newTransaction['sender_address']).push(newTransaction['transaction_outputs'][1]);
-	
+
  	curr_capacity = curr_capacity + 1 ;
 	res.send("1");
 	if( curr_capacity >= capacity ){
@@ -412,7 +412,7 @@ app.post('/transaction/broadcast', function(req, res) {
 				})
 				.catch(err => {
 					console.log("err2.3");
-				});			
+				});
 				noobcash.addTransactionToPendingTransactions(newTransaction);
 				//change receiver's wallet
 				wallets.get(newTransaction['receiver_address']).push(newTransaction['transaction_outputs'][0]);
@@ -420,7 +420,7 @@ app.post('/transaction/broadcast', function(req, res) {
 				wallets.get(newTransaction['sender_address']).splice(0,spent_count);
 				wallets.get(newTransaction['sender_address']).push(newTransaction['transaction_outputs'][1]);
 				curr_capacity = curr_capacity + 1 ;
-					
+
 				//if capacity full
 				//mine...
 				if( curr_capacity >= capacity ){
@@ -441,9 +441,9 @@ app.post('/receive-new-block', function(req, res) {
 	const newBlock = req.body.newBlock;
 	const lastBlock = noobcash.getLastBlock();
 	const correctIndex = lastBlock['index'] + 1 === newBlock['index'];
-	
+
 	if(correctIndex){
-		const correctHash = noobcash.validate_block(newBlock, lastBlock, difficulty, difficulty_string); 
+		const correctHash = noobcash.validate_block(newBlock, lastBlock, difficulty, difficulty_string);
 
 		if (correctHash) {
 			noobcash.chain.push(newBlock);
@@ -479,8 +479,8 @@ app.post('/receive-new-block', function(req, res) {
 
 // register a node with the network
 app.post('/register-node', function(req, res) {
-	
-	const unhashed_wallets = req.body.wallets;	
+
+	const unhashed_wallets = req.body.wallets;
 	wallets['_data'] = unhashed_wallets['_data'];
 	wallets['size'] = unhashed_wallets['size'];
 
