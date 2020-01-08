@@ -1,0 +1,193 @@
+All Nodes Registered
+0:0:00
+Broadcast Completed
+Broadcast Completed
+Broadcast Completed
+Broadcast Completed
+Mining Block No.2: 7764.583303
+0:0:08
+Broadcast Completed
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+New block rejected. It came second
+Broadcast Completed
+Mining Block No.3: 7501.832712
+0:0:42
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Broadcast Completed
+Block transmitted
+Mining Block No.4: 1152.973436
+0:0:58
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Broadcast Completed
+Block transmitted
+Broadcast Completed
+Mining Block No.5: 507.889724
+0:1:23
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+
+
+
+
+Listening on port 3001...
+Register at bootstrap
+Chain Valid
+Mining Block No.2: 26870.76228
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.3: 5270.850734
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+New block rejected. It came second
+Mining Block No.4: 22772.670092
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.5: 5190.306767
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Unhandled rejection RequestError: Error: socket hang up
+    at new RequestError (/home/user/Noobcash/node_modules/request-promise-core/lib/errors.js:14:15)
+    at Request.plumbing.callback (/home/user/Noobcash/node_modules/request-promise-core/lib/plumbing.js:87:29)
+    at Request.RP$callback [as _callback] (/home/user/Noobcash/node_modules/request-promise-core/lib/plumbing.js:46:31)
+    at self.callback (/home/user/Noobcash/node_modules/request/request.js:185:22)
+    at Request.emit (events.js:197:13)
+    at Request.onRequestError (/home/user/Noobcash/node_modules/request/request.js:877:8)
+    at ClientRequest.emit (events.js:197:13)
+    at Socket.socketOnEnd (_http_client.js:431:9)
+    at Socket.emit (events.js:202:15)
+    at endReadableNT (_stream_readable.js:1132:12)
+    at processTicksAndRejections (internal/process/next_tick.js:76:17)
+
+
+
+
+
+Listening on port 3001...
+Register at bootstrap
+Chain Valid
+Mining Block No.2: 22380.078628
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.3: 16596.944718
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.4: 24500.005562
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.5: 888.574337
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Unhandled rejection RequestError: Error: socket hang up
+    at new RequestError (/home/user/Noobcash/node_modules/request-promise-core/lib/errors.js:14:15)
+    at Request.plumbing.callback (/home/user/Noobcash/node_modules/request-promise-core/lib/plumbing.js:87:29)
+    at Request.RP$callback [as _callback] (/home/user/Noobcash/node_modules/request-promise-core/lib/plumbing.js:46:31)
+    at self.callback (/home/user/Noobcash/node_modules/request/request.js:185:22)
+    at Request.emit (events.js:197:13)
+    at Request.onRequestError (/home/user/Noobcash/node_modules/request/request.js:877:8)
+    at ClientRequest.emit (events.js:197:13)
+    at Socket.socketOnEnd (_http_client.js:431:9)
+    at Socket.emit (events.js:202:15)
+    at endReadableNT (_stream_readable.js:1132:12)
+    at processTicksAndRejections (internal/process/next_tick.js:76:17)
+
+
+
+
+
+
+Listening on port 3001...
+Register at bootstrap
+Chain Valid
+Mining Block No.2: 21960.315818
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.3: 5378.904784
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.4: 16906.854788
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.5: 26166.217222
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Unhandled rejection RequestError: Error: socket hang up
+    at new RequestError (/home/user/Noobcash/node_modules/request-promise-core/lib/errors.js:14:15)
+    at Request.plumbing.callback (/home/user/Noobcash/node_modules/request-promise-core/lib/plumbing.js:87:29)
+    at Request.RP$callback [as _callback] (/home/user/Noobcash/node_modules/request-promise-core/lib/plumbing.js:46:31)
+    at self.callback (/home/user/Noobcash/node_modules/request/request.js:185:22)
+    at Request.emit (events.js:197:13)
+    at Request.onRequestError (/home/user/Noobcash/node_modules/request/request.js:877:8)
+    at ClientRequest.emit (events.js:197:13)
+    at Socket.socketOnEnd (_http_client.js:431:9)
+    at Socket.emit (events.js:202:15)
+    at endReadableNT (_stream_readable.js:1132:12)
+    at processTicksAndRejections (internal/process/next_tick.js:76:17)
+
+
+
+Register at bootstrap
+Chain Valid
+Mining Block No.2: 26126.933343
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.3: 10845.598293
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+Mining Block No.4: 7545.977286
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+
+
+
+
+
+
+

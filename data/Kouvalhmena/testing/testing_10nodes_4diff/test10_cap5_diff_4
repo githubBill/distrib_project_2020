@@ -1,0 +1,44 @@
+
+> javaScript-blockchain@1.0.0 bootstrap_node /home/user/Noobcash
+> nodemon --watch dev -e js dev/bootstrap_node.js 3001 http://192.168.0.2:3001 5 10 4
+
+[33m[nodemon] 1.17.3[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching: /home/user/Noobcash/dev/**/*[39m
+[32m[nodemon] starting `node dev/bootstrap_node.js 3001 http://192.168.0.2:3001 5 10 4`[39m
+Listening on port 3001...
+Uid sent
+Uid sent
+Uid sent
+Uid sent
+Uid sent
+Uid sent
+Uid sent
+Uid sent
+Uid sent
+All Nodes Registered
+0:0:00
+Broadcast Completed
+Broadcast Completed
+Broadcast Completed
+Broadcast Completed
+Mining Block No.2: 22174.572829
+0:0:22
+Broadcast Completed
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+New block rejected. It came second
+Block transmitted
+New block rejected. It came second
+Broadcast Completed
+Broadcast Completed
+Broadcast Completed
+Broadcast Completed
+Mining Block No.3: 13696.48401
+0:1:03
+Broadcast Completed

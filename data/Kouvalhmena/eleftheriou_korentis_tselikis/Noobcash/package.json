@@ -1,0 +1,37 @@
+{
+  "name": "javaScript-blockchain",
+  "version": "1.0.0",
+  "description": "NoobCash",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bootstrap_node": "nodemon --watch dev -e js dev/bootstrap_node.js 3001 http://192.168.0.2:3001 10 10 4",
+    "node_1": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 3 4 4",
+    "node_2": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003 3 4 4",
+    "node_4": "nodemon --watch dev -e js dev/networkNode.js 3002 http://192.168.0.2:3002 1 10 4",
+    "node_5": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 3 4 4",
+    "node_6": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003 3 4 4",
+    "node_7": "nodemon --watch dev -e js dev/networkNode.js 3002 http://192.168.0.2:3002 1 10 4",
+    "node_8": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002 3 4 4",
+    "node_9": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003 3 4 4"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "execution-time": "^1.3.0",
+    "express": "^4.16.3",
+    "generate-rsa-keypair": "^0.1.2",
+    "hashmap": "^2.3.0",
+    "jwa": "^1.4.1",
+    "lazy": "^1.0.11",
+    "line-reader": "^0.4.0",
+    "nodemon": "^1.17.3",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2",
+    "sha256": "^0.2.0",
+    "time-counter": "^1.0.0",
+    "uuid": "^3.2.1",
+    "wait-until": "0.0.2"
+  }
+}
