@@ -1,0 +1,23 @@
+{
+  "name": "distrib_project_2020",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "exp514": "node . 5 1 4",
+    "exp554": "node . 5 5 4",
+    "exp5104": "node . 5 10 4",
+    "exp515": "node . 5 1 5",
+    "exp555": "node . 5 5 5",
+    "exp5105": "node . 5 10 5",
+    "exp1014": "node . 10 1 4",
+    "exp1054": "node . 10 5 4",
+    "exp10104": "node . 10 10 4",
+    "exp1015": "node . 10 1 5",
+    "exp1055": "node . 10 5 5",
+    "exp10105": "node . 10 10 5",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
