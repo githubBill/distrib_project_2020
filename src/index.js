@@ -6,5 +6,7 @@ NODE=require("./node.js")
 
 console.log("Running with number_of_nodes: " + number_of_nodes + " capacity: " + capacity + " difficulty: " + difficulty);
 for (id=0; id<number_of_nodes; id++) {
-    mynode = new NODE(id);
+    mynode = new NODE(id, capacity);
+    myblock = mynode.create_block(0, 0, 1);
+    console.log(myblock);
 }

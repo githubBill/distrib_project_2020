@@ -1,6 +1,7 @@
+const express = require('express');
+
 module.exports = class REST {
     constructor(id) {
-        const express = require('express');
         const app = express();
         const startport = 3000;
         const nodeid = id;

@@ -2,19 +2,25 @@ const jwa = require('jwa');
 
 REST = require("./rest.js")
 WALLET = require("./wallet.js")
-
+BLOCK = require("./block.js")
 
 module.exports = class NODE {
     nodeid;
+    capacity;
     wallet;
     restapp;
     blockchain;
 
-    constructor(id) {
+    constructor(id, capacity) {
         this.nodeid = id;
+        this.capacity = capacity;
         this.wallet = new WALLET();
         this.restapp = new REST(this.nodeid);
         this.blockchain = [];
+    }
+
+    create_block(id, nonce, previous_hash) {
+        return new BLOCK(id, nonce, previous_hash);
     }
 
     sign_transaction (transaction){

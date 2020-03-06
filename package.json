@@ -23,6 +23,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "jwa": "^2.0.0",
-    "node-rsa": "^1.0.7"
+    "node-rsa": "^1.0.7",
+    "object-hash": "^2.0.3"
   }
 }
