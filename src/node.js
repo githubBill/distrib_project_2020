@@ -1,21 +1,23 @@
 const jwa = require('jwa');
 
-REST = require("./rest.js")
 WALLET = require("./wallet.js")
 BLOCK = require("./block.js")
 
 module.exports = class NODE {
+    ip;
+    port;
     nodeid;
     capacity;
     wallet;
     restapp;
     blockchain;
 
-    constructor(id, capacity) {
+    constructor(ip, port, id, capacity) {
+        this.ip = ip;
+        this.port = port;
         this.nodeid = id;
         this.capacity = capacity;
         this.wallet = new WALLET();
-        this.restapp = new REST(this.nodeid);
         this.blockchain = [];
     }
 

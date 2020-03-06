@@ -1,15 +1,20 @@
 const express = require('express');
 
+NODE = require("./node.js")
+
+
 module.exports = class REST {
-    constructor(id) {
+    node;
+    constructor(ip, port, id, capacity) {
+        this.node = new NODE(ip, port, id, capacity);
         const app = express();
-        const startport = 3000;
-        const nodeid = id;
-        const port = startport+nodeid;
 
         app.get('/', (req, res) => {
-            res.send('I am Node' + nodeid + " Listening on port " + port);
+            res.send('I am Node' + this.node.id + " Listening on port " + this.node.port);
         });
-        app.listen(port, () => console.log('I am Node' + nodeid + " Listening on port " + port))
+        app.get('/debug', (req, res) => {
+            res.send(this.node);
+        });
+        app.listen(this.node.port, () => console.log('I am Node' + this.node.id + " Listening on port " + this.node.port))
     }
 }
