@@ -2,7 +2,7 @@
   "name": "distrib_project_2020",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "exp514": "node . 5 1 4",
     "exp554": "node . 5 5 4",
@@ -21,6 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "jwa": "^2.0.0",
+    "node-rsa": "^1.0.7"
   }
 }
