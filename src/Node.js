@@ -3,37 +3,43 @@ const Block = require("./Block")
 const Rest = require("./Rest")
 
 class Node {
-    ip;
-    port;
-    nodeid;
-    capacity;
-    difficulty;
-    wallet;
-    restapp;
-    blockchain;
-
-    constructor(ip, port, id, capacity, difficulty) {
+    constructor(bootstrap_info, ip, port, id, capacity, difficulty) {
         this.ip = ip;
         this.port = port;
-        this.nodeid = id;
+        this.id = id;
         this.capacity = capacity;
         this.difficulty = difficulty;
         this.wallet = new Wallet();
         this.restapp = new Rest(this);
         this.blockchain = [];
+        this.contacts=[bootstrap_info];
+
+        // if it's the bootstrap node
+        if (this.id == 0) {
+            this.contacts[0].publickey = this.wallet.publickey;
+        }
+        else {
+            this.send_contact();
+        }
     }
 
-    init() {
-        //this.restapp.init();
+    send_contact() {
+        let node_info = {
+            ip:         this.ip,
+            port:       this.port,
+            publickey:  this.publickey
+        }
+
     }
     getProperties() {
         let properties = {
             ip:         this.ip,
             port:       this.port,
-            nodeid:     this.nodeid,
+            id:         this.id,
             capacity:   this.capacity,
             wallet:     this.wallet.getProperties(),
-            blockchain: this.blockchain
+            blockchain: this.blockchain,
+            contacts:   this.contacts
         }
         return properties;
     }
