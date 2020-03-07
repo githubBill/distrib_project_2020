@@ -1,28 +1,31 @@
 const hash = require('object-hash');
 
-module.exports = class BLOCK {
+class Block {
     index;
     timestamp;
     transactions;
     nonce;
-    current_hash;
     previous_hash;
+    current_hash;
     constructor(index, nonce, previous_hash) {
         this.index = index;
         this.timestamp = Date.now();
         this.transactions = [];
         this.nonce = nonce;
-        this.current_hash = this.hashBlock();
         this.previous_hash = previous_hash;
+        this.current_hash = this.hashBlock();
     }
 
     hashBlock() {
-        var blockdata = {
+        let blockdata = {
             index:          this.index,
             timestamp:      this.timestamp,
             transactions:   this.transactions,
-            nonce:          this.nonce
+            nonce:          this.nonce,
+            previous_hash:  this.previous_hash
         }
         return hash(blockdata);
     }
 }
+
+module.exports = Block;
