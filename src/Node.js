@@ -1,12 +1,15 @@
+const axios = require('axios').default;
+
 const Wallet = require("./Wallet")
 const Block = require("./Block")
 const Rest = require("./Rest")
 
 class Node {
-    constructor(bootstrap_info, ip, port, id, capacity, difficulty) {
+    constructor(bootstrap_info, ip, port, id, number_of_nodes, capacity, difficulty) {
         this.ip = ip;
         this.port = port;
         this.id = id;
+        this.number_of_nodes = number_of_nodes;
         this.capacity = capacity;
         this.difficulty = difficulty;
         this.wallet = new Wallet();
@@ -23,14 +26,18 @@ class Node {
         }
     }
 
+    // send contact info to bootstrap node
     send_contact() {
-        let node_info = {
+        let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode"
+        console.log(url);
+        //node_info = JSON.stringify(node_info);
+        axios.post(url, {
             ip:         this.ip,
             port:       this.port,
-            publickey:  this.publickey
-        }
-
+            publickey:  this.wallet.publickey
+        });
     }
+
     getProperties() {
         let properties = {
             ip:         this.ip,

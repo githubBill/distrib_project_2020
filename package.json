@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "bootstrap": "node . 5 1 4 localhost localhost 0",
+    "bootstrap": "node . 2 1 4 localhost localhost 0",
     "exp514": "node . 5 1 4",
     "exp554": "node . 5 5 4",
     "exp5104": "node . 5 10 4",
@@ -22,6 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
     "express": "^4.17.1",
     "jwa": "^2.0.0",
     "node-rsa": "^1.0.7",

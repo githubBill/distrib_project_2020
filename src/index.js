@@ -18,7 +18,7 @@ let bootstrap_info = {
 console.log("Running with number_of_nodes: " + number_of_nodes + " capacity: " + capacity + " difficulty: " + difficulty);
 function node() {
     let port = bootstrap_port+id;
-    let mynode = new Node(bootstrap_info, ip, port, id, capacity, difficulty);
+    let mynode = new Node(bootstrap_info, ip, port, id, number_of_nodes, capacity, difficulty);
     myblock = mynode.blockchain.push(mynode.create_block(0, 0, 1));
 }
 
