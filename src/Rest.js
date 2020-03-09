@@ -32,7 +32,7 @@ class Rest {
             this.app.post('/backend/newnode', (req, res) => {
                 let contact_info = req.body.contact_info;
                 let id = req.body.id;
-                console.log('I am Node' + this.node.id + ". Got a new contact " + contact_info);
+                console.log('I am Node' + this.node.id + ". Got a new contact " + JSON.stringify(contact_info));
                 res.send('I am Node' + this.node.id + ". Got a new contact " + contact_info);
                 this.node.addContact(id, contact_info);
             });

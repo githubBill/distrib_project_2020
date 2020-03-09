@@ -2,20 +2,19 @@ const NodeRSA = require('node-rsa');
 const jwa = require('jwa');
 
 class Wallet {
-    privatekey;
-    publickey;
-
-    constructor() {
+    constructor(n) {
         let key = new NodeRSA({b: 256});
         key.generateKeyPair();
         this.privatekey = key.exportKey('private');
         this.publickey = key.exportKey('public');
+        this.nbc = 0;
     }
 
     getProperties() {
         let properties = {
             privatekey: this.privatekey,
-            publickey:  this.publickey
+            publickey:  this.publickey,
+            nbc:        this.nbc
         }
         return properties;
     }

@@ -7,7 +7,7 @@ function create_node(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficul
     mynode.init();
 }
 
-let n = process.argv[2];
+let n = parseInt(process.argv[2]);
 let capacity = parseInt(process.argv[3]);
 let difficulty = parseInt(process.argv[4]);
 
