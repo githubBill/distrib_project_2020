@@ -1,11 +1,12 @@
 const express = require('express');
-const axios = require('axios').default;
-
 
 class Rest {
     constructor(node) {
-        this.node = node;       // access parent object
+        this.node = node;   // reference to parent object
         this.app = express();
+    }
+
+    init() {
         this.app.use(express.json());
 
         this.app.get('/', (req, res) => {
@@ -19,9 +20,10 @@ class Rest {
 
         // gets activated when all nodes have been created
         this.app.post('/backend/updatecontacts', (req, res) => {
-            console.log('I am Node' + this.node.id + ". I am updating my contacts");
-            res.send('I am Node' + this.node.id + ". I am updating my contacts");
+            console.log('I am Node' + this.node.id + ". Updating my contacts");
+            res.send('I am Node' + this.node.id + ". Updating my contacts");
             this.node.contacts = req.body.contacts;
+            this.node.received_contacts = this.node.contacts.length;
         });
 
         // only on bootstrap node
@@ -30,21 +32,14 @@ class Rest {
             this.app.post('/backend/newnode', (req, res) => {
                 let contact_info = req.body.contact_info;
                 let id = req.body.id;
-                console.log('I am Node' + this.node.id + ". I just got a new contact " + contact_info);
-                res.send('I am Node' + this.node.id + ". I just got a new contact " + contact_info);
-                this.node.contacts[id] = contact_info;
-                if (this.node.contacts.length == this.node.number_of_nodes) {
-                    for (let i=1; i < this.node.contacts.length; i++) {
-                        let url = "http://" + this.node.contacts[i].ip + ":" + this.node.contacts[i].port + "/backend/updatecontacts";
-                        axios.post(url, {
-                            contacts:   this.node.contacts
-                        });
-                    }
-                }
+                console.log('I am Node' + this.node.id + ". Got a new contact " + contact_info);
+                res.send('I am Node' + this.node.id + ". Got a new contact " + contact_info);
+                this.node.addContact(id, contact_info);
             });
         }
 
-        this.app.listen(this.node.port, () => console.log('I am Node' + this.node.id + ". Listening on ip " + this.node.ip + " and port " + this.node.port))
+        // start logic when rest is ready
+        this.app.listen(this.node.port, this.node.start());
     }
 }
 
