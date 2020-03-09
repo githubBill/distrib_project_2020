@@ -5,18 +5,26 @@ const Block = require("./Block")
 const Rest = require("./Rest")
 
 class Node {
-    constructor(bootstrap_info, ip, port, id, number_of_nodes, capacity, difficulty) {
+    constructor(bootstrap_ip, bootstrap_port, ip, id, number_of_nodes, capacity, difficulty) {
         this.ip = ip;
-        this.port = port;
+        this.port = bootstrap_port + id;
+        console.log(this.port);
         this.id = id;
         this.number_of_nodes = number_of_nodes;
         this.capacity = capacity;
         this.difficulty = difficulty;
         this.wallet = new Wallet();
+        let bootstrap_info = {
+            ip:   bootstrap_ip,
+            port: bootstrap_port,
+            publickey:      null
+        }
         this.restapp = new Rest(this);
-        this.blockchain = [];
         this.contacts=[bootstrap_info];
+        this.blockchain = [];
+    }
 
+    init() {
         // if it's the bootstrap node
         if (this.id == 0) {
             this.contacts[0].publickey = this.wallet.publickey;
@@ -28,9 +36,7 @@ class Node {
 
     // send contact info to bootstrap node
     send_contact() {
-        let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode"
-        console.log(url);
-        //node_info = JSON.stringify(node_info);
+        let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode";
         axios.post(url, {
             ip:         this.ip,
             port:       this.port,
@@ -40,13 +46,14 @@ class Node {
 
     getProperties() {
         let properties = {
-            ip:         this.ip,
-            port:       this.port,
-            id:         this.id,
-            capacity:   this.capacity,
-            wallet:     this.wallet.getProperties(),
-            blockchain: this.blockchain,
-            contacts:   this.contacts
+            ip:                 this.ip,
+            port:               this.port,
+            id:                 this.id,
+            number_of_nodes:    this.number_of_nodes,
+            capacity:           this.capacity,
+            wallet:             this.wallet.getProperties(),
+            contacts:           this.contacts,
+            blockchain:         this.blockchain
         }
         return properties;
     }
