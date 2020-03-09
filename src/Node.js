@@ -8,7 +8,6 @@ class Node {
     constructor(bootstrap_ip, bootstrap_port, ip, id, number_of_nodes, capacity, difficulty) {
         this.ip = ip;
         this.port = bootstrap_port + id;
-        console.log(this.port);
         this.id = id;
         this.number_of_nodes = number_of_nodes;
         this.capacity = capacity;
@@ -20,7 +19,8 @@ class Node {
             publickey:      null
         }
         this.restapp = new Rest(this);
-        this.contacts=[bootstrap_info];
+        this.contacts= new Array(number_of_nodes);
+        this.contacts[0] = bootstrap_info;
         this.blockchain = [];
     }
 
@@ -38,10 +38,14 @@ class Node {
     send_contact() {
         let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode";
         axios.post(url, {
-            ip:         this.ip,
-            port:       this.port,
-            publickey:  this.wallet.publickey
-        });
+            id:             this.id,
+            contact_info:   {
+                ip:         this.ip,
+                port:       this.port,
+                publickey:  this.wallet.publickey
+            }
+        }
+        );
     }
 
     getProperties() {

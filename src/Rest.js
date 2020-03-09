@@ -28,10 +28,11 @@ class Rest {
         // gets activated when a new node is created
         if (this.node.id == 0) {
             this.app.post('/backend/newnode', (req, res) => {
-                let contact_info = req.body;
+                let contact_info = req.body.contact_info;
+                let id = req.body.id;
                 console.log('I am Node' + this.node.id + ". I just got a new contact " + contact_info);
                 res.send('I am Node' + this.node.id + ". I just got a new contact " + contact_info);
-                this.node.contacts.push(contact_info);
+                this.node.contacts[id] = contact_info;
                 if (this.node.contacts.length == this.node.number_of_nodes) {
                     for (let i=1; i < this.node.contacts.length; i++) {
                         let url = "http://" + this.node.contacts[i].ip + ":" + this.node.contacts[i].port + "/backend/updatecontacts";
