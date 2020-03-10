@@ -23,6 +23,11 @@
         "class-methods-use-this":   "error",
         "consistent-return":        "error",
         "no-param-reassign":        "error",
+        "no-invalid-this":          "error",
+        "init-declarations":        "error",
+        "no-label-var":             "error",
+        "no-undef-init":            "error",
+        "no-undefined":             "error",
         "no-use-before-define":     "error"
     }
 }

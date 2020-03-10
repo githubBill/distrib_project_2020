@@ -127,11 +127,4 @@ class Node {
     }
 }
 
-function test() {
-    this.text="test";
-    this.sig=this.sign_transaction(this.text);
-    this.check=this.verify_signature(this.sig, this.text, this.wallet.publickey);
-    console.log(this.sig, "\n", this.check);
-}
-
 module.exports = Node;

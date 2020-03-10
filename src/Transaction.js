@@ -2,6 +2,7 @@
 
 class Transaction {
     constructor(node) {
+        this.node = node;
         this.sender_address = null;
         this.receiver_address = null;
         this.amount;
