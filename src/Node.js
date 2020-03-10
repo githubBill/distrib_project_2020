@@ -1,8 +1,8 @@
 const axios = require('axios').default;
 
-const Wallet = require("./Wallet")
-const Blockchain = require("./Blockchain")
-const Rest = require("./Rest")
+const Wallet = require("./Wallet");
+const Blockchain = require("./Blockchain");
+const Rest = require("./Rest");
 
 class Node {
     constructor(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty) {
@@ -12,12 +12,12 @@ class Node {
         this.n = n;
         this.capacity = capacity;
         this.difficulty = difficulty;
-        this.wallet = new Wallet(n);
+        this.wallet = new Wallet();
         let bootstrap_info = {
             ip:   bootstrap_ip,
             port: bootstrap_port,
             publickey:      null
-        }
+        };
         this.rest = new Rest(this);
         this.contacts = new Array(n);
         this.received_contacts = 1;
@@ -35,6 +35,7 @@ class Node {
         // if it's the bootstrap node
         if (this.id == 0) {
             this.contacts[0].publickey = this.wallet.publickey;
+            this.wallet.nbc = 100 * this.n;
         }
         else {
             this.sendContact();
@@ -66,6 +67,7 @@ class Node {
     }
 
     sendBlockchain() {
+        return this;
     }
 
     // is called on bootstrap when all nodes are active
@@ -79,26 +81,6 @@ class Node {
         }
     }
 
-    getLatestBlock() {
-		return this.blockchain[this.blockchain.length - 1];
-    }
-
-    isBlockchainValid() {
-		for (let i = 1; i < this.blockchain.length; i++){
-			const currentBlock = this.blockchain[i];
-			const previousBlock = this.blockchain[i - 1];
-
-			if (currentBlock.hash !== currentBlock.hashBlock()) {
-				return false;
-			}
-
-			if (currentBlock.previousHash !== previousBlock.hash) {
-				return false;
-			}
-		}
-		return true;
-	}
-
     // for debugging
     getProperties() {
         let properties = {
@@ -111,19 +93,10 @@ class Node {
             wallet:         this.wallet.getProperties(),
             contacts:       this.contacts,
             blockchain:     this.blockchain.getProperties()
-        }
+        };
         return properties;
     }
-
-
-    create_block(id, nonce, previous_hash) {
-        return new Block(id, nonce, previous_hash);
-    }
 }
-
-Node.node = function() {
-    return mynode;
-};
 
 function test() {
     this.text="test";

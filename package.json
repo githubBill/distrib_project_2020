@@ -18,6 +18,7 @@
     "exp1015": "node . 10 1 5",
     "exp1055": "node . 10 5 5",
     "exp10105": "node . 10 10 5",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -28,5 +29,8 @@
     "jwa": "^2.0.0",
     "node-rsa": "^1.0.7",
     "object-hash": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
   }
 }

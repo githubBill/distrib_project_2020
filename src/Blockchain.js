@@ -1,8 +1,34 @@
 const hash = require('object-hash');
 
+class Block {
+    constructor(index, nonce, previous_hash) {
+        this.index = index;
+        this.timestamp = Date.now();
+        this.transactions = [];
+        this.nonce = nonce;
+        this.previous_hash = previous_hash;
+        this.current_hash = this.hashBlock();
+    }
+
+    hashBlock() {
+        let blockdata = {
+            index:          this.index,
+            timestamp:      this.timestamp,
+            transactions:   this.transactions,
+            nonce:          this.nonce,
+            previous_hash:  this.previous_hash
+        };
+        return hash(blockdata);
+    }
+}
+
 class Blockchain {
     constructor() {
-		this.chain = [new Block(0, 0, 1)];
+		this.chain = [Blockchain.createBlock(0, 0, 1)];
+    }
+
+    static createBlock(index, nonce, previous_hash) {
+        return new Block(index, nonce, previous_hash);
     }
 
     getLatestBlock() {
@@ -37,31 +63,8 @@ class Blockchain {
             chain:      this.chain,
             lastBlock:  this.getLatestBlock(),
             valid:      this.isChainValid()
-        }
+        };
         return properties;
-    }
-}
-
-
-class Block {
-    constructor(index, nonce, previous_hash) {
-        this.index = index;
-        this.timestamp = Date.now();
-        this.transactions = [];
-        this.nonce = nonce;
-        this.previous_hash = previous_hash;
-        this.current_hash = this.hashBlock();
-    }
-
-    hashBlock() {
-        let blockdata = {
-            index:          this.index,
-            timestamp:      this.timestamp,
-            transactions:   this.transactions,
-            nonce:          this.nonce,
-            previous_hash:  this.previous_hash
-        }
-        return hash(blockdata);
     }
 }
 
