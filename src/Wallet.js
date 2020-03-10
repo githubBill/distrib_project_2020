@@ -1,3 +1,5 @@
+"use strict";
+
 const NodeRSA = require('node-rsa');
 const jwa = require('jwa');
 

@@ -1,3 +1,5 @@
+"use strict";
+
 const { spawn } = require('child_process');
 
 let n = parseInt(process.argv[2]);

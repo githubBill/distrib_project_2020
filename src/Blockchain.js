@@ -1,3 +1,5 @@
+"use strict";
+
 const hash = require('object-hash');
 
 class Block {

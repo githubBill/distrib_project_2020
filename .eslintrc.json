@@ -15,6 +15,7 @@
     },
     "ignorePatterns": ["data/", "node_modules/"],
     "rules": {
+        "strict":                   "error",
         "semi":                     "error",
         "no-unused-vars":           "warn",
         "no-template-curly-in-string":"error",

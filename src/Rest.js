@@ -1,3 +1,5 @@
+"use strict";
+
 const express = require('express');
 
 class Rest {
@@ -20,11 +22,16 @@ class Rest {
         });
 
         // gets activated when all nodes have been created
-        this.app.post('/backend/updatecontacts', (req, res) => {
-            console.log('I am Node' + this.node.id + ". Updating my contacts");
-            res.send('I am Node' + this.node.id + ". Updating my contacts");
-            this.node.contacts = req.body.contacts;
-            this.node.received_contacts = this.node.contacts.length;
+        this.app.post('/backend/receivecontacts', (req, res) => {
+            console.log('I am Node' + this.node.id + ". Received contacts");
+            res.send('I am Node' + this.node.id + ". Received contacts");
+            this.node.action_receivecontacts(req.body.contacts);
+        });
+        // gets activated when all nodes have been created
+        this.app.post('/backend/receiveblockchain', (req, res) => {
+            console.log('I am Node' + this.node.id + ". Received Blockchain");
+            res.send('I am Node' + this.node.id + ". Received Blockchain");
+            this.node.action_receiveblockchain(req.body.blockchain);
         });
 
         // only on bootstrap node

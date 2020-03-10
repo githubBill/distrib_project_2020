@@ -1,3 +1,5 @@
+"use strict";
+
 class Transaction {
     constructor(node) {
         this.sender_address = null;

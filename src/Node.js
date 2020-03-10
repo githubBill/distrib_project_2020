@@ -1,3 +1,5 @@
+"use strict";
+
 const axios = require('axios').default;
 
 const Wallet = require("./Wallet");
@@ -61,25 +63,51 @@ class Node {
     addContact (id, contact_info) {
         this.received_contacts += 1;
         this.contacts[id] = contact_info;
-        this.sendBlockchain();
         if (this.received_contacts == this.n) {
             this.allNodesActive();
         }
     }
 
-    sendBlockchain() {
-        return this;
+    action_receivecontacts(contacts) {
+        console.log('I am Node' + this.id + ". Updating my contacts");
+        this.contacts = contacts;
+        this.received_contacts = this.contacts.length;
+    }
+    action_receiveblockchain(blockchain) {
+        if (this.blockchain.isChainValid()) {
+            console.log('I am Node' + this.id + ". Updating my Blockchain");
+            this.blockchain.chain = blockchain.chain;
+        } else {
+            console.log('I am Node' + this.id + ". Received Blockchain is not valid");
+        }
+    }
+
+    broadcastContacts() {
+        for (let id=0; id < this.contacts.length; id++) {
+            if (id != this.id) {
+                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivecontacts";
+                axios.post(url, {
+                    contacts:   this.contacts
+                });
+            }
+        }
+    }
+    broadcastBlockchain() {
+        for (let id=0; id < this.contacts.length; id++) {
+            if (id != this.id) {
+                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receiveblockchain";
+                axios.post(url, {
+                    blockchain:   this.blockchain
+                });
+            }
+        }
     }
 
     // is called on bootstrap when all nodes are active
     allNodesActive() {
         // update all contacts
-        for (let i=1; i < this.contacts.length; i++) {
-            let url = "http://" + this.contacts[i].ip + ":" + this.contacts[i].port + "/backend/updatecontacts";
-            axios.post(url, {
-                contacts:   this.contacts
-            });
-        }
+        this.broadcastContacts();
+        this.broadcastBlockchain();
     }
 
     // for debugging
