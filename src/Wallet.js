@@ -9,24 +9,15 @@ class Wallet {
         key.generateKeyPair();
         this.privatekey = key.exportKey('private');
         this.publickey = key.exportKey('public');
-        this.nbc = 0;
         Object.seal(this);
     }
 
     getProperties() {
         let properties = {
             privatekey: this.privatekey,
-            publickey:  this.publickey,
-            nbc:        this.nbc
+            publickey:  this.publickey
         };
         return properties;
-    }
-
-    sign_transaction (transaction){
-        const rsa_sign = jwa('RS256');
-        const input = transaction ; //string
-        const signature = rsa_sign.sign(input,this.privatekey);
-        return signature;
     }
 
     static verify_signature (signature, transaction, publicKey){

@@ -23,11 +23,21 @@ class Block {
         };
         return hash(blockdata);
     }
+
+    mineBlock(difficulty) {
+        while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+            this.nonce++;
+            this.current_hash = this.hashBlock();
+        }
+        console.log("BLOCK MINED: " + this.hash);
+    }
 }
 
 class Blockchain {
-    constructor() {
+    constructor(capacity, difficulty) {
         this.chain = [Blockchain.createBlock(0, 0, 1)];
+        this.capacity = capacity;
+        this.difficulty = difficulty;
         Object.seal(this);
     }
 
@@ -41,7 +51,7 @@ class Blockchain {
 
 	addBlock(newBlock) {
 		newBlock.previous_hash = this.getLatestBlock().current_hash;
-		newBlock.current_hash = newBlock.hashBlock();
+		newBlock.mineBlock(this.difficulty);
 		this.chain.push(newBlock);
 	}
 
@@ -65,6 +75,8 @@ class Blockchain {
     getProperties() {
         let properties = {
             chain:      this.chain,
+            capacity:   this.capacity,
+            difficulty: this.difficulty,
             lastBlock:  this.getLatestBlock(),
             valid:      this.isChainValid()
         };

@@ -4,6 +4,8 @@ const axios = require('axios').default;
 
 const Wallet = require("./Wallet");
 const Blockchain = require("./Blockchain");
+const Transaction = require("./Transaction");
+
 const Rest = require("./Rest");
 
 class Node {
@@ -12,8 +14,6 @@ class Node {
         this.port = bootstrap_port + id;
         this.id = id;
         this.n = n;
-        this.capacity = capacity;
-        this.difficulty = difficulty;
         this.wallet = new Wallet();
         let bootstrap_info = {
             ip:   bootstrap_ip,
@@ -24,7 +24,7 @@ class Node {
         this.contacts = new Array(n);
         this.received_contacts = 1;
         this.contacts[0] = bootstrap_info;
-        this.blockchain = new Blockchain();
+        this.blockchain = new Blockchain(capacity, difficulty);
         Object.seal(this);
     }
 
@@ -38,7 +38,6 @@ class Node {
         // if it's the bootstrap node
         if (this.id == 0) {
             this.contacts[0].publickey = this.wallet.publickey;
-            this.wallet.nbc = 100 * this.n;
         }
         else {
             this.sendContact();
@@ -102,11 +101,15 @@ class Node {
             }
         }
     }
+    static broadcastTransaction() {
+    }
 
     // is called on bootstrap when all nodes are active
     allNodesActive() {
         // update all contacts
         this.broadcastContacts();
+        let first_transaction = new Transaction(0, this.wallet.publickey, 100*this.n, this.wallet.privatekey);
+        this.blockchain.getLatestBlock().transactions.push(first_transaction);
         this.broadcastBlockchain();
     }
 
@@ -117,8 +120,6 @@ class Node {
             port:           this.port,
             id:             this.id,
             n:              this.n,
-            capacity:       this.capacity,
-            difficulty:     this.difficulty,
             wallet:         this.wallet.getProperties(),
             contacts:       this.contacts,
             blockchain:     this.blockchain.getProperties()
