@@ -38,6 +38,8 @@ class Node {
         // if it's the bootstrap node
         if (this.id == 0) {
             this.contacts[0].publickey = this.wallet.publickey;
+            let first_transaction = new Transaction(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n);
+            this.blockchain.addTransaction(first_transaction);
         }
         else {
             this.sendContact();
@@ -58,15 +60,20 @@ class Node {
         );
     }
 
+    // only on bootstrap node
     // add contact to position id and update contact at all node when completed
-    addContact (id, contact_info) {
+    action_receivecontact (id, contact_info) {
         this.received_contacts += 1;
         this.contacts[id] = contact_info;
+        // when all nodes are active
         if (this.received_contacts == this.n) {
-            this.allNodesActive();
+            this.broadcastContacts();
+            this.broadcastBlockchain();
+            for (let i=0; i < this.contacts.length; i++) {
+                this.createaBroadcastTransaction(this.contacts[i].publickey, 100);
+            }
         }
     }
-
     action_receivecontacts(contacts) {
         console.log('I am Node' + this.id + ". Updating my contacts");
         this.contacts = contacts;
@@ -78,6 +85,15 @@ class Node {
             this.blockchain.chain = blockchain.chain;
         } else {
             console.log('I am Node' + this.id + ". Received Blockchain is not valid");
+        }
+    }
+    action_receivetransction(received_transaction) {
+        let transaction = new Transaction(received_transaction);
+        if (transaction.isSignatureVerified() && transaction.isTransactionValid()) {
+            console.log('I am Node' + this.id + ". Transaction verified and validated");
+            this.blockchain.addTransaction(transaction);
+        } else {
+            console.log('I am Node' + this.id + ". Transaction is not valid");
         }
     }
 
@@ -101,16 +117,14 @@ class Node {
             }
         }
     }
-    static broadcastTransaction() {
-    }
-
-    // is called on bootstrap when all nodes are active
-    allNodesActive() {
-        // update all contacts
-        this.broadcastContacts();
-        let first_transaction = new Transaction(0, this.wallet.publickey, 100*this.n, this.wallet.privatekey);
-        this.blockchain.getLatestBlock().transactions.push(first_transaction);
-        this.broadcastBlockchain();
+    createaBroadcastTransaction(receiver_address, amount) {
+        let mytransaction = new Transaction(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount);
+        for (let id=0; id < this.contacts.length; id++) {
+            let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivetransaction";
+            axios.post(url, {
+                transaction:   mytransaction
+            });
+        }
     }
 
     // for debugging

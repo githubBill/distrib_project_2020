@@ -33,6 +33,12 @@ class Rest {
             res.send('I am Node' + this.node.id + ". Received Blockchain");
             this.node.action_receiveblockchain(req.body.blockchain);
         });
+        // gets activated when a transaction is broadcasted
+        this.app.post('/backend/receivetransaction', (req, res) => {
+            console.log('I am Node' + this.node.id + ". Received Trabsaction");
+            res.send('I am Node' + this.node.id + ". Received Transaction");
+            this.node.action_receivetransction(req.body.transaction);
+        });
 
         // only on bootstrap node
         // gets activated when a new node is created
@@ -42,7 +48,7 @@ class Rest {
                 let id = req.body.id;
                 console.log('I am Node' + this.node.id + ". Got a new contact " + JSON.stringify(contact_info));
                 res.send('I am Node' + this.node.id + ". Got a new contact " + contact_info);
-                this.node.addContact(id, contact_info);
+                this.node.action_receivecontact(id, contact_info);
             });
         }
 

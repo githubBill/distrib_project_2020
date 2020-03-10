@@ -53,7 +53,15 @@ class Blockchain {
 		newBlock.previous_hash = this.getLatestBlock().current_hash;
 		newBlock.mineBlock(this.difficulty);
 		this.chain.push(newBlock);
-	}
+    }
+
+    addTransaction(newTransaction) {
+        let last_block =  this.getLatestBlock();
+        last_block.transactions.push(newTransaction);
+        if (last_block.transactions.length == this.capacity) {
+            console.log("block is full");
+        }
+    }
 
 	isChainValid() {
 		for (let i = 1; i < this.chain.length; i++){
