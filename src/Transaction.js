@@ -7,6 +7,7 @@ class Transaction {
         this.transaction_inputs = [];
         this.transaction_outputs = [];
         this.signature = null;
+        Object.seal(this);
     }
 }
 

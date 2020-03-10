@@ -23,6 +23,7 @@ class Node {
         this.received_contacts = 1;
         this.contacts[0] = bootstrap_info;
         this.blockchain = new Blockchain();
+        Object.seal(this);
     }
 
     // complex initialization should be outside of constructor

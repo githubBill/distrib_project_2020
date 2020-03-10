@@ -4,6 +4,7 @@ class Rest {
     constructor(node) {
         this.node = node;   // reference to parent object
         this.app = express();
+        Object.seal(this);
     }
 
     init() {

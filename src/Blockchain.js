@@ -8,6 +8,7 @@ class Block {
         this.nonce = nonce;
         this.previous_hash = previous_hash;
         this.current_hash = this.hashBlock();
+        Object.seal(this);
     }
 
     hashBlock() {
@@ -24,7 +25,8 @@ class Block {
 
 class Blockchain {
     constructor() {
-		this.chain = [Blockchain.createBlock(0, 0, 1)];
+        this.chain = [Blockchain.createBlock(0, 0, 1)];
+        Object.seal(this);
     }
 
     static createBlock(index, nonce, previous_hash) {

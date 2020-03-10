@@ -8,6 +8,7 @@ class Wallet {
         this.privatekey = key.exportKey('private');
         this.publickey = key.exportKey('public');
         this.nbc = 0;
+        Object.seal(this);
     }
 
     getProperties() {
