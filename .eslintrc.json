@@ -5,9 +5,7 @@
         "commonjs": true,
         "es6": true
     },
-    "plugins": [
-        "jsdoc"
-    ],
+    "plugins": ["jsdoc"],
     "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
     "globals": {
         "Atomics": "readonly",

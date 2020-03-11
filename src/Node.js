@@ -26,6 +26,7 @@ class Node {
         this.port = bootstrap_port + id;
         this.id = id;
         this.n = n;
+        this.UTXO = [];
         this.wallet = new Wallet();
         let bootstrap_info = {
             ip:   bootstrap_ip,
@@ -56,8 +57,10 @@ class Node {
         // if it's the bootstrap node
         if (this.id == 0) {
             this.contacts[0].publickey = this.wallet.publickey;
-            let first_transaction = new Transaction(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n);
+            let first_transaction = new Transaction();
+            first_transaction.create(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n, this.UTXO.slice());
             this.blockchain.addTransaction(first_transaction);
+            this.UTXO.push(first_transaction.transaction_outputs[0]);
         }
         else {
             this.sendContact();
@@ -98,7 +101,7 @@ class Node {
         if (this.received_contacts == this.n) {
             this.broadcastContacts();
             this.broadcastBlockchain();
-            for (let i=0; i < this.contacts.length; i++) {
+            for (let i=1; i < this.contacts.length; i++) {
                 this.createaBroadcastTransaction(this.contacts[i].publickey, 100);
             }
         }
@@ -125,10 +128,18 @@ class Node {
         }
     }
     action_receivetransction(received_transaction) {
-        let transaction = new Transaction(received_transaction);
+        let transaction = new Transaction();
+        //console.log(received_transaction);
+        transaction.import(received_transaction);
         if (transaction.isSignatureVerified() && transaction.isTransactionValid()) {
             console.log('I am Node' + this.id + ". Transaction verified and validated");
             this.blockchain.addTransaction(transaction);
+            if (transaction.receiver_address == this.wallet.publickey) {
+                this.UTXO.push(transaction.transaction_outputs[0]);
+            }
+            if (transaction.sender_address == this.wallet.publickey) {
+                this.UTXO.push(transaction.transaction_outputs[1]);
+            }
         } else {
             console.log('I am Node' + this.id + ". Transaction is not valid");
         }
@@ -155,12 +166,18 @@ class Node {
         }
     }
     createaBroadcastTransaction(receiver_address, amount) {
-        let mytransaction = new Transaction(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount);
+        let mytransaction = new Transaction();
+        mytransaction.create(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount, this.UTXO.slice());
+        this.UTXO = [];
         for (let id=0; id < this.contacts.length; id++) {
-            let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivetransaction";
-            axios.post(url, {
-                transaction:   mytransaction
-            });
+            if (id == this.id) {    // self
+                this.action_receivetransction(mytransaction);
+            } else {
+                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivetransaction";
+                axios.post(url, {
+                    transaction:   mytransaction
+                });
+            }
         }
     }
 
@@ -171,6 +188,7 @@ class Node {
             port:           this.port,
             id:             this.id,
             n:              this.n,
+            UTXO:           this.UTXO,
             wallet:         this.wallet.getProperties(),
             contacts:       this.contacts,
             blockchain:     this.blockchain.getProperties()

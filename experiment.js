@@ -51,7 +51,7 @@ if (process.argv.length == 5) {
     // spawn remaining nodes with delay
     setTimeout(function(){
         spawn_nodes(bootstrap_ip, bootstrap_port, ip, n, capacity, difficulty);
-    }, 8000);
+    }, 9000);
 } else {
     console.log("Arguments: n capacity difficulty");
 }
