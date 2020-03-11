@@ -2,7 +2,18 @@
 
 const hash = require('object-hash');
 
+/**
+ * @class Block
+ */
 class Block {
+
+    /**
+     *Creates an instance of Block.
+     * @param {*} index
+     * @param {*} nonce
+     * @param {*} previous_hash
+     * @memberof Block
+     */
     constructor(index, nonce, previous_hash) {
         this.index = index;
         this.timestamp = Date.now();
@@ -13,6 +24,11 @@ class Block {
         Object.seal(this);
     }
 
+
+    /**
+     * @returns {object}
+     * @memberof Block
+     */
     hashBlock() {
         let blockdata = {
             index:          this.index,
@@ -24,6 +40,11 @@ class Block {
         return hash(blockdata);
     }
 
+
+    /**
+     * @param {number} difficulty
+     * @memberof Block
+     */
     mineBlock(difficulty) {
         while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
             this.nonce++;
@@ -34,6 +55,13 @@ class Block {
 }
 
 class Blockchain {
+
+    /**
+     *Creates an instance of Blockchain.
+     * @param {number} capacity
+     * @param {number} difficulty
+     * @memberof Blockchain
+     */
     constructor(capacity, difficulty) {
         this.chain = [Blockchain.createBlock(0, 0, 1)];
         this.capacity = capacity;
@@ -41,20 +69,42 @@ class Blockchain {
         Object.seal(this);
     }
 
+
+    /**
+     * @static
+     * @param {number} index
+     * @param {number} nonce
+     * @param {string} previous_hash
+     * @returns {Block}
+     * @memberof Blockchain
+     */
     static createBlock(index, nonce, previous_hash) {
         return new Block(index, nonce, previous_hash);
     }
 
+
+    /**
+     * @returns {Block[]}
+     * @memberof Blockchain
+     */
     getLatestBlock() {
 		return this.chain[this.chain.length - 1];
 	}
 
-	addBlock(newBlock) {
+    /**
+     * @param {Block} newBlock
+     * @memberof Blockchain
+     */
+    addBlock(newBlock) {
 		newBlock.previous_hash = this.getLatestBlock().current_hash;
 		newBlock.mineBlock(this.difficulty);
 		this.chain.push(newBlock);
     }
 
+    /**
+     * @param {*} newTransaction
+     * @memberof Blockchain
+     */
     addTransaction(newTransaction) {
         let last_block =  this.getLatestBlock();
         last_block.transactions.push(newTransaction);
@@ -63,7 +113,11 @@ class Blockchain {
         }
     }
 
-	isChainValid() {
+    /**
+     * @returns {boolean}
+     * @memberof Blockchain
+     */
+    isChainValid() {
 		for (let i = 1; i < this.chain.length; i++){
 			const currentBlock = this.chain[i];
 			const previousBlock = this.chain[i - 1];
@@ -80,6 +134,10 @@ class Blockchain {
     }
 
     // for debugging
+    /**
+     * @returns {object}
+     * @memberof Blockchain
+     */
     getProperties() {
         let properties = {
             chain:      this.chain,

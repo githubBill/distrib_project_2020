@@ -6,6 +6,15 @@ let n = parseInt(process.argv[2]);
 let capacity = parseInt(process.argv[3]);
 let difficulty = parseInt(process.argv[4]);
 
+/**
+ * @param {string} bootstrap_ip bootstrap_ip
+ * @param {number} bootstrap_port bootstrap_port
+ * @param {string} ip ip
+ * @param {number} id id
+ * @param {number} n n
+ * @param {number} capacity capacity
+ * @param {number} difficulty difficulty
+ */
 function spawn_process(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty) {
     let child = spawn('node', ['.', n, capacity, difficulty, bootstrap_ip, ip, id]);
     child.stdout.on('data', (data) => {
@@ -17,6 +26,14 @@ function spawn_process(bootstrap_ip, bootstrap_port, ip, id, n, capacity, diffic
     });
 }
 
+/**
+ * @param {string} bootstrap_ip
+ * @param {number} bootstrap_port
+ * @param {string} ip
+ * @param {number} n
+ * @param {number} capacity
+ * @param {number} difficulty
+ */
 function spawn_nodes (bootstrap_ip, bootstrap_port, ip, n, capacity, difficulty) {
     for (let id=1; id<n; id++) {
         spawn_process(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty);

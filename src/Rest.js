@@ -2,14 +2,19 @@
 
 const express = require('express');
 
+/**
+ * @class Rest
+ */
 class Rest {
+
+    /**
+     *Creates an instance of Rest.
+     * @param {*} node
+     * @memberof Rest
+     */
     constructor(node) {
         this.node = node;   // reference to parent object
         this.app = express();
-        Object.seal(this);
-    }
-
-    init() {
         this.app.use(express.json());
 
         this.app.get('/', (req, res) => {
@@ -52,6 +57,14 @@ class Rest {
             });
         }
 
+        Object.seal(this);
+    }
+
+
+    /**
+     * @memberof Rest
+     */
+    init() {
         // start logic when rest is ready
         this.app.listen(this.node.port, this.node.start());
     }

@@ -5,7 +5,10 @@
         "commonjs": true,
         "es6": true
     },
-    "extends": "eslint:recommended",
+    "plugins": [
+        "jsdoc"
+    ],
+    "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
@@ -28,6 +31,10 @@
         "no-label-var":             "error",
         "no-undef-init":            "error",
         "no-undefined":             "error",
-        "no-use-before-define":     "error"
+        "no-use-before-define":     "error",
+        "jsdoc/newline-after-description": 0,
+        "jsdoc/require-param-description": 0,
+        "jsdoc/require-returns-description": 0,
+        "jsdoc/require-property-description": 0
     }
 }

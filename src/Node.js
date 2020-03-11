@@ -9,6 +9,18 @@ const Transaction = require("./Transaction");
 const Rest = require("./Rest");
 
 class Node {
+
+    /**
+     *Creates an instance of Node.
+     * @param {string} bootstrap_ip
+     * @param {number} bootstrap_port
+     * @param {string} ip
+     * @param {number} id
+     * @param {number} n
+     * @param {number} capacity
+     * @param {number} difficulty
+     * @memberof Node
+     */
     constructor(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty) {
         this.ip = ip;
         this.port = bootstrap_port + id;
@@ -29,11 +41,17 @@ class Node {
     }
 
     // complex initialization should be outside of constructor
+    /**
+     * @memberof Node
+     */
     init() {
         this.rest.init();
     }
 
     // start when restapp is ready
+    /**
+     * @memberof Node
+     */
     start() {
         // if it's the bootstrap node
         if (this.id == 0) {
@@ -47,6 +65,9 @@ class Node {
     }
 
     // send contact info to bootstrap node
+    /**
+     * @memberof Node
+     */
     sendContact() {
         let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode";
         axios.post(url, {
@@ -62,6 +83,14 @@ class Node {
 
     // only on bootstrap node
     // add contact to position id and update contact at all node when completed
+    /**
+     * @param {number} id
+     * @param {object} contact_info
+     * @param {string} contact_info.ip
+     * @param {number} contact_info.port
+     * @param {string} contact_info.publickey
+     * @memberof Node
+     */
     action_receivecontact (id, contact_info) {
         this.received_contacts += 1;
         this.contacts[id] = contact_info;
@@ -74,6 +103,14 @@ class Node {
             }
         }
     }
+
+    /**
+     * @param {object[]} contacts
+     * @param {string} contacts[].ip
+     * @param {number} contacts[].port
+     * @param {string} contacts[].publickey
+     * @memberof Node
+     */
     action_receivecontacts(contacts) {
         console.log('I am Node' + this.id + ". Updating my contacts");
         this.contacts = contacts;

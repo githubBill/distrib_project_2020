@@ -3,7 +3,19 @@
 const hash = require('object-hash');
 const jwa = require('jwa');
 
+
+/**
+ * @class Transaction
+ */
 class Transaction {
+    /**
+     *Creates an instance of Transaction.
+     * @param {string} privatekey
+     * @param {string} sender_address
+     * @param {string} receiver_address
+     * @param {number} amount
+     * @memberof Transaction
+     */
     constructor(privatekey, sender_address, receiver_address, amount) {
         if (arguments.length == 1 && typeof(arguments[0]) == "object") {
             Object.assign(this, arguments[0]);
@@ -19,6 +31,10 @@ class Transaction {
         Object.seal(this);
     }
 
+    /**
+     * @returns {string}
+     * @memberof Transaction
+     */
     hashTransaction() {
         let transctiondata = {
             sender_address:         this.sender_address,
@@ -30,6 +46,12 @@ class Transaction {
         return hash(transctiondata);
     }
 
+
+    /**
+     * @param {string} privatekey
+     * @returns {string}
+     * @memberof Transaction
+     */
     signTransaction (privatekey){
         const rsa_sign = jwa('RS256');
         let transctiondata = {
@@ -44,6 +66,11 @@ class Transaction {
         return rsa_sign.sign(transctiondata,privatekey);
     }
 
+
+    /**
+     * @returns {boolean}
+     * @memberof Transaction
+     */
     isSignatureVerified () {
         const rsa_sign = jwa('RS256');
         let transctiondata = {
@@ -58,6 +85,12 @@ class Transaction {
         return rsa_sign.verify(transctiondata, this.signature, this.sender_address);
     }
 
+
+
+    /**
+     * @returns {boolean}
+     * @memberof Transaction
+     */
     isTransactionValid () {
         let transctiondata = {
             sender_address:         this.sender_address,

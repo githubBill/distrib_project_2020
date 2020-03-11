@@ -2,7 +2,14 @@
 
 const NodeRSA = require('node-rsa');
 
+/**
+ * @class Wallet
+ */
 class Wallet {
+    /**
+     *Creates an instance of Wallet.
+     * @memberof Wallet
+     */
     constructor() {
         let key = new NodeRSA({b: 256});
         key.generateKeyPair();
@@ -11,7 +18,13 @@ class Wallet {
         Object.seal(this);
     }
 
+
+    /**
+     * @returns {object} properties
+     * @memberof Wallet
+     */
     getProperties() {
+
         let properties = {
             privatekey: this.privatekey,
             publickey:  this.publickey
