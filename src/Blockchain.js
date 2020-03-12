@@ -1,67 +1,8 @@
 "use strict";
 
-const hash = require('object-hash');
-
-const Transaction = require("./Transaction");
-
-/**
- * @class Block
- */
-class Block {
-    /**
-     *Creates an instance of Block.
-     * @param {*} index
-     * @param {*} nonce
-     * @param {*} previous_hash
-     * @memberof Block
-     * @property {number} index
-     * @property {number} timestamp
-     * @property {Transaction[]} transactions
-     * @property {number} nonce
-     * @property {string} previous_hash
-     * @property {string} current_hash
-     */
-    constructor(index, nonce, previous_hash) {
-        this.index = index;
-        this.timestamp = Date.now();
-        this.transactions = [];
-        this.nonce = nonce;
-        this.previous_hash = previous_hash;
-        this.current_hash = this.hashBlock();
-        Object.seal(this);
-    }
-
-
-    /**
-     * @returns {object}
-     * @memberof Block
-     */
-    hashBlock() {
-        let blockdata = {
-            index:          this.index,
-            timestamp:      this.timestamp,
-            transactions:   this.transactions,
-            nonce:          this.nonce,
-            previous_hash:  this.previous_hash
-        };
-        return hash(blockdata);
-    }
-
-    /**
-     * @param {number} difficulty
-     * @memberof Block
-     */
-    mineBlock(difficulty) {
-        while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
-            this.nonce++;
-            this.current_hash = this.hashBlock();
-        }
-        console.log("BLOCK MINED: " + this.hash);
-    }
-}
+const Block = require("./Block");
 
 class Blockchain {
-
     /**
      *Creates an instance of Blockchain.
      * @param {number} capacity
@@ -75,7 +16,6 @@ class Blockchain {
         Object.seal(this);
     }
 
-
     /**
      * @static
      * @param {number} index
@@ -85,9 +25,10 @@ class Blockchain {
      * @memberof Blockchain
      */
     static createBlock(index, nonce, previous_hash) {
-        return new Block(index, nonce, previous_hash);
+        let myblock = new Block();
+        myblock.init(index, nonce, previous_hash);
+        return myblock;
     }
-
 
     /**
      * @returns {Block[]}
@@ -128,10 +69,9 @@ class Blockchain {
 			const currentBlock = this.chain[i];
 			const previousBlock = this.chain[i - 1];
 
-			if (currentBlock.current_hash !== currentBlock.hashBlock()) {
+			if (currentBlock.current_hash !== currentBlock.calculateHash()) {
 				return false;
 			}
-
 			if (currentBlock.previous_hash !== previousBlock.current_hash) {
 				return false;
 			}
