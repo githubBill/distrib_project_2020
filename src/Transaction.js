@@ -71,7 +71,8 @@ class Transaction {
     }
 
     /**
-     * @param {object} obj plain javascript object
+     *import plain javascript object to Transaction instance
+     * @param {object} obj
      * @memberof Transaction
      */
     import(obj) {

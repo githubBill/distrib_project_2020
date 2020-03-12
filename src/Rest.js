@@ -21,9 +21,18 @@ class Rest {
             res.send('I am Node' + this.node.id + ". Listening on ip " + this.node.ip + " and port " + this.node.port);
         });
 
+        // for debugging
         // shows node properties for debugging purposes
         this.app.get('/debug', (req, res) => {
             res.send(this.node.getProperties());
+        });
+        // shows node properties for debugging purposes
+        this.app.get('/debug/contacts', (req, res) => {
+            res.send(this.node.getProperties().contacts);
+        });
+        // shows node properties for debugging purposes
+        this.app.get('/debug/blockchain', (req, res) => {
+            res.send(this.node.getProperties().blockchain);
         });
 
         // gets activated when all nodes have been created
