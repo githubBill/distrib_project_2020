@@ -2,17 +2,24 @@
 
 const hash = require('object-hash');
 
+const Transaction = require("./Transaction");
+
 /**
  * @class Block
  */
 class Block {
-
     /**
      *Creates an instance of Block.
      * @param {*} index
      * @param {*} nonce
      * @param {*} previous_hash
      * @memberof Block
+     * @property {number} index
+     * @property {number} timestamp
+     * @property {Transaction[]} transactions
+     * @property {number} nonce
+     * @property {string} previous_hash
+     * @property {string} current_hash
      */
     constructor(index, nonce, previous_hash) {
         this.index = index;
@@ -39,7 +46,6 @@ class Block {
         };
         return hash(blockdata);
     }
-
 
     /**
      * @param {number} difficulty

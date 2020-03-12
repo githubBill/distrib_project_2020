@@ -3,28 +3,33 @@
 const hash = require('object-hash');
 const jwa = require('jwa');
 
-/**
- * @class Transaction
- * @property {string} sender_address
- * @property {string} receiver_address
- * @property {number} amount
- * @property {object[]} transaction_inputs
- * @property {object[]} transaction_outputs
- * @property {string} transaction_id
- * @property {string} signature
- */
+/** @class Transaction */
 class Transaction {
     /**
      *Creates an instance of Transaction.
      * @memberof Transaction
+     * @property {string} sender_address
+     * @property {string} receiver_address
+     * @property {number} amount
+     * @property {Transaction[]} transaction_inputs
+     * @property {object[]} transaction_outputs
+     * @property {string} transaction_id
+     * @property {string} signature
      */
     constructor() {
+        /** @type {string} */
         this.sender_address = null;
+        /** @type {string} */
         this.receiver_address = null;
+        /** @type {number} */
         this.amount = null;
+        /** @type {Transaction[]} */
         this.transaction_inputs = [];
+        /** @type {string} */
         this.transaction_id = "0";
+        /** @type {object[]} */
         this.transaction_outputs = [];
+        /** @type {string} */
         this.signature = null;
         Object.seal(this);
     }
@@ -37,7 +42,7 @@ class Transaction {
      * @param {object[]} transaction_inputs
      * @memberof Transaction
      */
-    create(privatekey, sender_address, receiver_address, amount, transaction_inputs) {
+    init(privatekey, sender_address, receiver_address, amount, transaction_inputs) {
         this.sender_address = sender_address;
         this.receiver_address = receiver_address;
         this.amount = amount;
@@ -141,7 +146,6 @@ class Transaction {
         }
         return check;
     }
-
 }
 
 module.exports = Transaction;

@@ -28,6 +28,7 @@ class Node {
         this.n = n;
         this.UTXO = [];
         this.wallet = new Wallet();
+        this.wallet.init();
         let bootstrap_info = {
             ip:   bootstrap_ip,
             port: bootstrap_port,
@@ -58,7 +59,7 @@ class Node {
         if (this.id == 0) {
             this.contacts[0].publickey = this.wallet.publickey;
             let first_transaction = new Transaction();
-            first_transaction.create(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n, this.UTXO.slice());
+            first_transaction.init(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n, this.UTXO.slice());
             this.blockchain.addTransaction(first_transaction);
             this.UTXO.push(first_transaction.transaction_outputs[0]);
         }
@@ -167,7 +168,7 @@ class Node {
     }
     createaBroadcastTransaction(receiver_address, amount) {
         let mytransaction = new Transaction();
-        mytransaction.create(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount, this.UTXO.slice());
+        mytransaction.init(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount, this.UTXO.slice());
         this.UTXO = [];
         for (let id=0; id < this.contacts.length; id++) {
             if (id == this.id) {    // self

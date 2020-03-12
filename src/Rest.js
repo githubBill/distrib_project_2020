@@ -60,7 +60,6 @@ class Rest {
         Object.seal(this);
     }
 
-
     /**
      * @memberof Rest
      */
