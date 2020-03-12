@@ -2,18 +2,34 @@
 
 const Block = require("./Block");
 
+/** @class Blockchain */
 class Blockchain {
     /**
      *Creates an instance of Blockchain.
+     * @memberof Blockchain
+     * @property {object[]} chain
+     * @property {number} capacity
+     * @property {number} difficulty
+     */
+    constructor() {
+        /** @type {object[]} */
+        this.chain = [];
+        /** @type {number} */
+        this.capacity = 0;
+        /** @type {number} */
+        this.difficulty = 0;
+        Object.seal(this);
+    }
+
+    /**
      * @param {number} capacity
      * @param {number} difficulty
      * @memberof Blockchain
      */
-    constructor(capacity, difficulty) {
+    init(capacity, difficulty) {
         this.chain = [Blockchain.createBlock(0, 0, 1)];
         this.capacity = capacity;
         this.difficulty = difficulty;
-        Object.seal(this);
     }
 
     /**

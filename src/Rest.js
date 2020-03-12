@@ -9,7 +9,7 @@ class Rest {
 
     /**
      *Creates an instance of Rest.
-     * @param {*} node
+     * @param {Node} node
      * @memberof Rest
      */
     constructor(node) {
@@ -17,6 +17,13 @@ class Rest {
         this.app = express();
         this.app.use(express.json());
 
+        Object.seal(this);
+    }
+
+    /**
+     * @memberof Rest
+     */
+    init() {
         this.app.get('/', (req, res) => {
             res.send('I am Node' + this.node.id + ". Listening on ip " + this.node.ip + " and port " + this.node.port);
         });
@@ -54,27 +61,8 @@ class Rest {
             this.node.action_receivetransction(req.body.transaction);
         });
 
-        // only on bootstrap node
-        // gets activated when a new node is created
-        if (this.node.id == 0) {
-            this.app.post('/backend/newnode', (req, res) => {
-                let contact_info = req.body.contact_info;
-                let id = req.body.id;
-                console.log('I am Node' + this.node.id + ". Got a new contact " + JSON.stringify(contact_info));
-                res.send('I am Node' + this.node.id + ". Got a new contact " + contact_info);
-                this.node.action_receivecontact(id, contact_info);
-            });
-        }
-
-        Object.seal(this);
-    }
-
-    /**
-     * @memberof Rest
-     */
-    init() {
         // start logic when rest is ready
-        this.app.listen(this.node.port, this.node.start());
+        this.app.listen(this.node.port, this.node.sendContact());
     }
 }
 

@@ -8,9 +8,31 @@ const Transaction = require("./Transaction");
 
 const Rest = require("./Rest");
 
+/** @class Node */
 class Node {
     /**
      *Creates an instance of Node.
+     * @param {string} bootstrap_ip
+     * @param {number} bootstrap_port
+     * @param {string} ip
+     * @param {number} id
+     * @param {number} n
+     * @memberof Node
+     */
+    constructor() {
+        this.ip = "";
+        this.port = 0;
+        this.id = 0;
+        this.n = 0;
+        this.wallet = new Wallet();
+        this.contacts = [];
+        this.received_contacts = 1;
+        this.blockchain = new Blockchain();
+        this.rest = new Rest(this);
+        Object.seal(this);
+    }
+
+    /**
      * @param {string} bootstrap_ip
      * @param {number} bootstrap_port
      * @param {string} ip
@@ -20,88 +42,43 @@ class Node {
      * @param {number} difficulty
      * @memberof Node
      */
-    constructor(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty) {
+    init(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty) {
         this.ip = ip;
-        this.port = bootstrap_port + id;
+        this.port = bootstrap_port+id;
         this.id = id;
         this.n = n;
-        this.wallet = new Wallet();
         this.wallet.init();
-        let bootstrap_contact = {
+        this.contacts = new Array(n);
+        this.received_contacts = 1;
+        this.contacts[0] = {
             ip:   bootstrap_ip,
             port: bootstrap_port,
             publickey:      null,
             UTXO:   []
         };
-        this.rest = new Rest(this);
-        this.contacts = new Array(n);
-        this.received_contacts = 1;
-        this.contacts[0] = bootstrap_contact;
-        this.blockchain = new Blockchain(capacity, difficulty);
-        Object.seal(this);
-    }
-
-    // complex initialization should be outside of constructor
-    /**
-     * @memberof Node
-     */
-    init() {
+        this.contacts[this.id] = {
+            ip:   this.ip,
+            port: this.port,
+            publickey: this.wallet.publickey,
+            UTXO:   []
+        };
+        this.blockchain.init(capacity, difficulty);
         this.rest.init();
-        // if it's the bootstrap node
-        if (this.id == 0) {
-            this.contacts[0].publickey = this.wallet.publickey;
-            let first_transaction = new Transaction();
-            first_transaction.init(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n, this.contacts[this.id].UTXO.slice());
-            this.blockchain.addTransaction(first_transaction);
-            this.contacts[0].UTXO.push(first_transaction.transaction_outputs[0]);
-        }
     }
 
+    //
     /**
-     *Is called when restapp is ready
-     * @memberof Node
-     */
-    start() {
-        if (this.id != 0) {
-            this.sendContact();
-        }
-    }
-
-    // send contact info to bootstrap node
-    /**
+     *send contact info to bootstrap node
      * @memberof Node
      */
     sendContact() {
-        let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode";
-        axios.post(url, {
-            id:             this.id,
-            contact_info:   {
-                ip:         this.ip,
-                port:       this.port,
-                publickey:  this.wallet.publickey,
-                UTXO:       []
+        if (this.id != 0) {
+            let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode";
+            axios.post(url, {
+                id:             this.id,
+                contact_info:   this.contacts[this.id]
             }
-        }
-        );
-    }
-
-    // only on bootstrap node
-    // add contact to position id and update contact at all node when completed
-    /**
-     * @param {number} id
-     * @param {object} contact_info
-     * @param {string} contact_info.ip
-     * @param {number} contact_info.port
-     * @param {string} contact_info.publickey
-     * @param {object} contact_info.UTXO
-     * @memberof Node
-     */
-    action_receivecontact (id, contact_info) {
-        this.received_contacts += 1;
-        this.contacts[id] = JSON.parse(JSON.stringify(contact_info));
-        // when all nodes are active
-        if (this.received_contacts == this.n) {
-            this.broadcastContacts();
+            );
         }
     }
 
@@ -142,45 +119,7 @@ class Node {
         }
     }
 
-    broadcastContacts() {
-        let axioses = [];
-        for (let id=0; id < this.contacts.length; id++) {
-                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivecontacts";
-                axioses.push(axios.post(url, {
-                    contacts:   this.contacts
-                }));
-        }
-        Promise.all(axioses).then((responses) => {
-            console.log("AXIOS ", this.contacts[0].UTXO);
-            this.broadcastBlockchain();
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
-    broadcastBlockchain() {
-        let axioses = [];
-        for (let id=0; id < this.contacts.length; id++) {
-            if (id != this.id) {
-                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receiveblockchain";
-                axioses.push(axios.post(url, {
-                    blockchain:   this.blockchain
-                }));
-            }
-        }
-        Promise.all(axioses).then((responses) => {
-            this.initialTransactions();
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
-    initialTransactions() {
-        for (let i=1; i < this.contacts.length; i++) {
-            this.createaBroadcastTransaction(this.contacts[i].publickey, 100);
-        }
-    }
-
-    createaBroadcastTransaction(receiver_address, amount) {
-        console.log("I am node" + this.id + ". I am creating a transaction", this.contacts[this.id].UTXO.slice());
+    client_doTransaction(receiver_address, amount) {
         let mytransaction = new Transaction();
         mytransaction.init(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount, this.contacts[this.id].UTXO.slice());
         let axioses = [];
