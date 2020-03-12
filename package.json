@@ -1,0 +1,40 @@
+{
+  "name": "distrib_project_2020",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "node0": "node . 2 1 4 localhost localhost 0",
+    "node1": "node . 2 1 4 localhost localhost 1",
+    "node2": "node . 2 1 4 localhost localhost 2",
+    "node3": "node . 2 1 4 localhost localhost 3",
+    "node4": "node . 2 1 4 localhost localhost 4",
+    "exp514": "node experiment 5 1 4",
+    "exp554": "node experiment 5 5 4",
+    "exp5104": "node experiment 5 10 4",
+    "exp515": "node experiment 5 1 5",
+    "exp555": "node experiment 5 5 5",
+    "exp5105": "node experiment 5 10 5",
+    "exp1014": "node experiment 10 1 4",
+    "exp1054": "node experiment 10 5 4",
+    "exp10104": "node experiment 10 10 4",
+    "exp1015": "node experiment 10 1 5",
+    "exp1055": "node experiment 10 5 5",
+    "exp10105": "node experiment 10 10 5",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "jwa": "^2.0.0",
+    "node-rsa": "^1.0.7",
+    "object-hash": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-plugin-jsdoc": "^22.0.0"
+  }
+}

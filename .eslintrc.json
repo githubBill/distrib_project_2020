@@ -1,0 +1,38 @@
+{
+    "env": {
+        "browser": true,
+        "node": true,
+        "commonjs": true,
+        "es6": true
+    },
+    "plugins": ["jsdoc"],
+    "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "ignorePatterns": ["data/", "node_modules/"],
+    "rules": {
+        "strict":                   "error",
+        "semi":                     "error",
+        "no-unused-vars":           "warn",
+        "no-template-curly-in-string":"error",
+        "block-scoped-var":         "error",
+        "class-methods-use-this":   "error",
+        "consistent-return":        "error",
+        "no-param-reassign":        "error",
+        "no-invalid-this":          "error",
+        "init-declarations":        "error",
+        "no-label-var":             "error",
+        "no-undef-init":            "error",
+        "no-undefined":             "error",
+        "no-use-before-define":     "error",
+        "jsdoc/newline-after-description": 0,
+        "jsdoc/require-param-description": 0,
+        "jsdoc/require-returns-description": 0,
+        "jsdoc/require-property-description": 0
+    }
+}
