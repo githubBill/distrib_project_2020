@@ -5,15 +5,25 @@ const axios = require('axios').default;
 const Node = require("./Node");
 const Transaction = require("./Transaction");
 
-
 /** @class BootstrapNode @extends {Node} */
 class BootstrapNode extends Node {
-
+    /**
+     *Creates an instance of BootstrapNode.
+     * @memberof BootstrapNode
+     */
     constructor() {
         super();
         Object.seal(this);
     }
 
+    /**
+     * @param {string} bootstrap_ip
+     * @param {number} bootstrap_port
+     * @param {string} ip
+     * @param {number} id
+     * @param {number} n
+     * @memberof BootstrapNode
+     */
     init(bootstrap_ip, bootstrap_port, ip, id, n) {
         // gets activated when a new node is created
         this.rest.app.post('/backend/newnode', (req, res) => {
@@ -96,6 +106,11 @@ class BootstrapNode extends Node {
             console.log(err);
         });
     }
+
+    /**
+     *transfer 100 nbc to each node
+     * @memberof BootstrapNode
+     */
     initialTransactions() {
         for (let i=1; i < this.contacts.length; i++) {
             this.client_doTransaction(this.contacts[i].publickey, 100);

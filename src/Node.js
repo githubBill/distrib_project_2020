@@ -5,29 +5,41 @@ const axios = require('axios').default;
 const Wallet = require("./Wallet");
 const Blockchain = require("./Blockchain");
 const Transaction = require("./Transaction");
-
 const Rest = require("./Rest");
 
 /** @class Node */
 class Node {
     /**
      *Creates an instance of Node.
-     * @param {string} bootstrap_ip
-     * @param {number} bootstrap_port
-     * @param {string} ip
-     * @param {number} id
-     * @param {number} n
      * @memberof Node
+     * @property {string} ip
+     * @property {number} port
+     * @property {number} id
+     * @property {number} n
+     * @property {Wallet} wallet
+     * @property {object[]} contacts
+     * @property {number} received_contacts
+     * @property {Blockchain} blockchain
+     * @property {Rest} rest
      */
     constructor() {
+        /** @type {string} */
         this.ip = "";
+        /** @type {number} */
         this.port = 0;
+        /** @type {number} */
         this.id = 0;
+        /** @type {number} */
         this.n = 0;
+        /** @type {Wallet} */
         this.wallet = new Wallet();
+        /** @type {object[]} */
         this.contacts = [];
+        /** @type {number} */
         this.received_contacts = 1;
+        /** @type {Blockchain} */
         this.blockchain = new Blockchain();
+        /** @type {Rest} */
         this.rest = new Rest(this);
         Object.seal(this);
     }
@@ -94,6 +106,11 @@ class Node {
         this.contacts = JSON.parse(JSON.stringify(contacts));
         this.received_contacts = this.contacts.length;
     }
+
+    /**
+     * @param {Blockchain} blockchain
+     * @memberof Node
+     */
     action_receiveblockchain(blockchain) {
         if (this.blockchain.isChainValid()) {
             console.log('I am Node' + this.id + ". Updating my Blockchain");
@@ -102,6 +119,11 @@ class Node {
             console.log('I am Node' + this.id + ". Received Blockchain is not valid");
         }
     }
+
+    /**
+     * @param {object} received_transaction
+     * @memberof Node
+     */
     action_receivetransction(received_transaction) {
         let transaction = new Transaction();
         transaction.import(received_transaction);
@@ -119,6 +141,11 @@ class Node {
         }
     }
 
+    /**
+     * @param {string} receiver_address
+     * @param {number} amount
+     * @memberof Node
+     */
     client_doTransaction(receiver_address, amount) {
         let mytransaction = new Transaction();
         mytransaction.init(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount, this.contacts[this.id].UTXO.slice());
@@ -135,7 +162,11 @@ class Node {
         }
     }
 
-    // for debugging
+    /**
+     *for debugging
+     * @returns {object}
+     * @memberof Node
+     */
     getProperties() {
         let properties = {
             ip:             this.ip,
