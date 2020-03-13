@@ -1,6 +1,7 @@
 "use strict";
 
 const Block = require("./Block");
+const Transaction = require("./Transaction");
 
 /** @class Blockchain */
 class Blockchain {
@@ -27,27 +28,30 @@ class Blockchain {
      * @memberof Blockchain
      */
     init(capacity, difficulty) {
-        this.chain = [Blockchain.createBlock(0, 0, 1)];
+        let genesisblock = new Block();
+        genesisblock.init(0, 0, 1);
+        this.chain = [genesisblock];
         this.capacity = capacity;
         this.difficulty = difficulty;
     }
 
     /**
-     * @static
-     * @param {number} index
-     * @param {number} nonce
-     * @param {string} previous_hash
-     * @returns {Block}
+     *import plain javascript object to Transaction instance
+     * @param {object} obj
      * @memberof Blockchain
      */
-    static createBlock(index, nonce, previous_hash) {
-        let myblock = new Block();
-        myblock.init(index, nonce, previous_hash);
-        return myblock;
+    import(obj) {
+        Object.assign(this, obj);
+        this.chain = [];
+        obj.chain.forEach((block) => {
+            let block_instance = new Block();
+            block_instance.import(block);
+            this.chain.push(block_instance);
+        });
     }
 
     /**
-     * @returns {Block[]}
+     * @returns {Block}
      * @memberof Blockchain
      */
     getLatestBlock() {
@@ -55,24 +59,20 @@ class Blockchain {
 	}
 
     /**
-     * @param {Block} newBlock
-     * @memberof Blockchain
-     */
-    addBlock(newBlock) {
-		newBlock.previous_hash = this.getLatestBlock().current_hash;
-		newBlock.mineBlock(this.difficulty);
-		this.chain.push(newBlock);
-    }
-
-    /**
-     * @param {*} newTransaction
+     * @param {Transaction} newTransaction
      * @memberof Blockchain
      */
     addTransaction(newTransaction) {
         let last_block =  this.getLatestBlock();
+        console.log("last block length " + last_block.transactions.length, "capacity " + this.capacity);
         last_block.transactions.push(newTransaction);
+        console.log("last block length " + last_block.transactions.length, "capacity " + this.capacity);
         if (last_block.transactions.length == this.capacity) {
             console.log("block is full");
+            let newblock = new Block();
+            newblock.init(last_block.index+1, 0, this.getLatestBlock().current_hash);
+            newblock.mineBlock(this.difficulty);
+            this.chain.push(newblock);
         }
     }
 

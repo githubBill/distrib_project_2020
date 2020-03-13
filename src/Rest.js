@@ -47,7 +47,7 @@ class Rest {
             let id = req.params.id;
             let receiver_address = this.node.contacts[id].publickey;
             let amount = parseInt(req.params.amount);
-            this.node.client_doTransaction(receiver_address, amount);
+            this.node.create_transaction(receiver_address, amount);
             res.send("I am node" + this.node.id + ". Doing transaction to " + id + " with amount " + amount);
         });
 
@@ -67,6 +67,11 @@ class Rest {
         this.app.post('/backend/receivetransaction', (req, res) => {
             res.send('I am Node' + this.node.id + ". Received Transaction");
             this.node.action_receivetransction(req.body.transaction);
+        });
+        // gets activated when a block is broadcasted
+        this.app.post('/backend/receiveblock', (req, res) => {
+            res.send('I am Node' + this.node.id + ". Received Block");
+            this.node.action_receiveblock(req.body.block);
         });
 
         // start logic when rest is ready

@@ -22,27 +22,26 @@ class BootstrapNode extends Node {
      * @param {string} ip
      * @param {number} id
      * @param {number} n
+     * @param {number} capacity
+     * @param {number} difficulty
      * @memberof BootstrapNode
      */
-    init(bootstrap_ip, bootstrap_port, ip, id, n) {
+    init(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty) {
         // gets activated when a new node is created
         this.rest.app.post('/backend/newnode', (req, res) => {
             let contact_info = req.body.contact_info;
             let id = req.body.id;
-            console.log('I am Node' + this.id + ". Got a new contact " + JSON.stringify(contact_info));
             res.send('I am Node' + this.id + ". Got a new contact " + contact_info);
             this.action_receivecontact(id, contact_info);
         });
-
-        super.init(bootstrap_ip, bootstrap_port, ip, id, n);
-
-        if (this.id == 0) {
-            this.contacts[0].publickey = this.wallet.publickey;
-            let first_transaction = new Transaction();
-            first_transaction.init(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n, this.contacts[this.id].UTXO.slice());
-            this.blockchain.addTransaction(first_transaction);
-            this.contacts[0].UTXO.push(first_transaction.transaction_outputs[0]);
-        }
+        // inherited init
+        super.init(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty);
+        // genesis
+        this.contacts[0].publickey = this.wallet.publickey;
+        let first_transaction = new Transaction();
+        first_transaction.init(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n, this.contacts[this.id].UTXO.slice());
+        this.blockchain.addTransaction(first_transaction);
+        this.contacts[0].UTXO.push(first_transaction.transaction_outputs[0]);
     }
 
     /**
@@ -56,6 +55,7 @@ class BootstrapNode extends Node {
      * @memberof Node
      */
     action_receivecontact (id, contact_info) {
+        console.log('I am Node' + this.id + ". Got a new contact");
         this.received_contacts += 1;
         this.contacts[id] = JSON.parse(JSON.stringify(contact_info));
         // when all nodes are active
@@ -78,7 +78,6 @@ class BootstrapNode extends Node {
             }));
         }
         Promise.all(axioses).then((responses) => {
-            console.log("AXIOS ", this.contacts[0].UTXO);
             this.broadcastBlockchain();
         }).catch((err) => {
             console.log(err);
@@ -113,7 +112,7 @@ class BootstrapNode extends Node {
      */
     initialTransactions() {
         for (let i=1; i < this.contacts.length; i++) {
-            this.client_doTransaction(this.contacts[i].publickey, 100);
+            this.create_transaction(this.contacts[i].publickey, 100);
         }
     }
 }
