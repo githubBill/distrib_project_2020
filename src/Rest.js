@@ -33,13 +33,22 @@ class Rest {
         this.app.get('/debug', (req, res) => {
             res.send(this.node.getProperties());
         });
-        // shows node properties for debugging purposes
+        // shows node.contacts properties for debugging purposes
         this.app.get('/debug/contacts', (req, res) => {
             res.send(this.node.getProperties().contacts);
         });
-        // shows node properties for debugging purposes
+        // shows node.blockchain properties for debugging purposes
         this.app.get('/debug/blockchain', (req, res) => {
             res.send(this.node.getProperties().blockchain);
+        });
+
+        // does a transaction with amount to node with id
+        this.app.get('/client/doTransaction/:id-:amount', (req, res) => {
+            let id = req.params.id;
+            let receiver_address = this.node.contacts[id].publickey;
+            let amount = parseInt(req.params.amount);
+            this.node.client_doTransaction(receiver_address, amount);
+            res.send("I am node" + this.node.id + ". Doing transaction to " + id + " with amount " + amount);
         });
 
         // gets activated when all nodes have been created
@@ -56,7 +65,6 @@ class Rest {
         });
         // gets activated when a transaction is broadcasted
         this.app.post('/backend/receivetransaction', (req, res) => {
-            console.log('I am Node' + this.node.id + ". Received Trabsaction");
             res.send('I am Node' + this.node.id + ". Received Transaction");
             this.node.action_receivetransction(req.body.transaction);
         });

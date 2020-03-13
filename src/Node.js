@@ -127,15 +127,16 @@ class Node {
     action_receivetransction(received_transaction) {
         let transaction = new Transaction();
         transaction.import(received_transaction);
+        let receiver_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[0].recipient);
+        let sender_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[1].recipient);
+        console.log('I am Node' + this.id + ". Received Trabsaction from node" + sender_i + " to node" + receiver_i);
         if (transaction.isSignatureVerified() && transaction.isTransactionValid()) {
             console.log('I am Node' + this.id + ". Transaction verified and validated");
             this.blockchain.addTransaction(transaction);
             // update UTXOs
-            let receiver_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[0].recipient);
             this.contacts[receiver_i].UTXO.push(transaction.transaction_outputs[0]);
-            let sender_contact = this.contacts.find(contact => contact.publickey === transaction.transaction_outputs[1].recipient);
-            sender_contact.UTXO = [];
-            sender_contact.UTXO.push(transaction.transaction_outputs[1]);
+            this.contacts[sender_i].UTXO = [];
+            this.contacts[sender_i].UTXO.push(transaction.transaction_outputs[1]);
         } else {
             console.log('I am Node' + this.id + ". Transaction is not valid");
         }
