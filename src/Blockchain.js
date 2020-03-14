@@ -1,7 +1,6 @@
 "use strict";
 
 const Block = require("./Block");
-const Transaction = require("./Transaction");
 
 /** @class Blockchain */
 class Blockchain {

@@ -85,7 +85,7 @@ class BootstrapNode extends Node {
                 contacts:   this.contacts
             }));
         }
-        Promise.all(axioses).then((responses) => {
+        Promise.all(axioses).then(() => {
             this.broadcastBlockchain();
         }).catch((err) => {
             console.log(err);
@@ -107,7 +107,7 @@ class BootstrapNode extends Node {
                 }));
             }
         }
-        Promise.all(axioses).then((responses) => {
+        Promise.all(axioses).then(() => {
             this.initialTransactions();
         }).catch((err) => {
             console.log(err);
@@ -123,6 +123,7 @@ class BootstrapNode extends Node {
         //for (let i=1; i<3; i++) {
             this.create_transaction(this.contacts[i].publickey, 100);
         }
+        console.log("Bootstrap node. Finished all initial transactiosn");
     }
 }
 
