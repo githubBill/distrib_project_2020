@@ -48,6 +48,21 @@ class Block {
     }
 
     /**
+     *import plain javascript object to Block instance
+     * @param {object} obj
+     * @memberof Block
+     */
+    import(obj) {
+        Object.assign(this, obj);
+        this.transactions = [];
+        obj.transactions.forEach((transaction) => {
+            let transaction_instance = new Transaction();
+            transaction_instance.import(transaction);
+            this.transactions.push(transaction_instance);
+        });
+    }
+
+    /**
      * @returns {string}
      * @memberof Block
      */
@@ -67,11 +82,25 @@ class Block {
      * @memberof Block
      */
     mineBlock(difficulty) {
-        while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+        while (this.current_hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
             this.nonce++;
             this.current_hash = this.calculateHash();
         }
-        console.log("BLOCK MINED: " + this.hash);
+        console.log("BLOCK MINED: " + this.current_hash);
+    }
+
+    /**
+     * @param {string} received_previoushash
+     * @returns {boolean}
+     * @memberof Block
+     */
+    isValidated(received_previoushash) {
+        let check = true;
+        if (this.current_hash != this.calculateHash() ||
+            this.previous_hash != received_previoushash) {
+            check = false;
+        }
+        return check;
     }
 }
 

@@ -27,54 +27,35 @@ class Blockchain {
      * @memberof Blockchain
      */
     init(capacity, difficulty) {
-        this.chain = [Blockchain.createBlock(0, 0, 1)];
+        let genesisblock = new Block();
+        genesisblock.init(0, 0, 1);
+        this.chain = [genesisblock];
         this.capacity = capacity;
         this.difficulty = difficulty;
     }
 
     /**
-     * @static
-     * @param {number} index
-     * @param {number} nonce
-     * @param {string} previous_hash
-     * @returns {Block}
+     *import plain javascript object to Transaction instance
+     * @param {object} obj
      * @memberof Blockchain
      */
-    static createBlock(index, nonce, previous_hash) {
-        let myblock = new Block();
-        myblock.init(index, nonce, previous_hash);
-        return myblock;
+    import(obj) {
+        Object.assign(this, obj);
+        this.chain = [];
+        obj.chain.forEach((block) => {
+            let block_instance = new Block();
+            block_instance.import(block);
+            this.chain.push(block_instance);
+        });
     }
 
     /**
-     * @returns {Block[]}
+     * @returns {Block}
      * @memberof Blockchain
      */
     getLatestBlock() {
 		return this.chain[this.chain.length - 1];
 	}
-
-    /**
-     * @param {Block} newBlock
-     * @memberof Blockchain
-     */
-    addBlock(newBlock) {
-		newBlock.previous_hash = this.getLatestBlock().current_hash;
-		newBlock.mineBlock(this.difficulty);
-		this.chain.push(newBlock);
-    }
-
-    /**
-     * @param {*} newTransaction
-     * @memberof Blockchain
-     */
-    addTransaction(newTransaction) {
-        let last_block =  this.getLatestBlock();
-        last_block.transactions.push(newTransaction);
-        if (last_block.transactions.length == this.capacity) {
-            console.log("block is full");
-        }
-    }
 
     /**
      * @returns {boolean}

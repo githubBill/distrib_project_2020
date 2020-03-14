@@ -55,8 +55,6 @@ class Transaction {
             nbc_remaining += this.transaction_inputs[i].amount;
         }
         nbc_remaining -= this.amount;
-        console.log(this.transaction_inputs);
-        console.log("nbc_remaining ", nbc_remaining);
         this.transaction_outputs[0] = {
             id: this.transaction_id,
             recipient: this.receiver_address,
@@ -141,9 +139,12 @@ class Transaction {
             amount:                 this.amount,
             transaction_inputs:     this.transaction_inputs
         };
-        let check = false;
-        if (hash(transctiondata) == this.transaction_id) {
-            check = true;
+        let check = true;
+        if (hash(transctiondata) != this.transaction_id) {
+            check = false;
+        }
+        if (this.transaction_outputs[1].amount < 0) {
+            check = false;
         }
         return check;
     }
