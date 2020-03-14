@@ -59,24 +59,6 @@ class Blockchain {
 	}
 
     /**
-     * @param {Transaction} newTransaction
-     * @memberof Blockchain
-     */
-    addTransaction(newTransaction) {
-        let last_block =  this.getLatestBlock();
-        console.log("last block length " + last_block.transactions.length, "capacity " + this.capacity);
-        last_block.transactions.push(newTransaction);
-        console.log("last block length " + last_block.transactions.length, "capacity " + this.capacity);
-        if (last_block.transactions.length == this.capacity) {
-            console.log("block is full");
-            let newblock = new Block();
-            newblock.init(last_block.index+1, 0, this.getLatestBlock().current_hash);
-            newblock.mineBlock(this.difficulty);
-            this.chain.push(newblock);
-        }
-    }
-
-    /**
      * @returns {boolean}
      * @memberof Blockchain
      */

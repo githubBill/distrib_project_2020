@@ -54,24 +54,24 @@ class Rest {
         // gets activated when all nodes have been created
         this.app.post('/backend/receivecontacts', (req, res) => {
             console.log('I am Node' + this.node.id + ". Received contacts");
-            res.send('I am Node' + this.node.id + ". Received contacts");
             this.node.action_receivecontacts(req.body.contacts);
+            res.send('I am Node' + this.node.id + ". Received contacts");
         });
         // gets activated when all nodes have been created
         this.app.post('/backend/receiveblockchain', (req, res) => {
             console.log('I am Node' + this.node.id + ". Received Blockchain");
-            res.send('I am Node' + this.node.id + ". Received Blockchain");
             this.node.action_receiveblockchain(req.body.blockchain);
+            res.send('I am Node' + this.node.id + ". Received Blockchain");
         });
         // gets activated when a transaction is broadcasted
         this.app.post('/backend/receivetransaction', (req, res) => {
-            res.send('I am Node' + this.node.id + ". Received Transaction");
             this.node.action_receivetransction(req.body.transaction);
+            res.send('I am Node' + this.node.id + ". Received Transaction");
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/receiveblock', (req, res) => {
-            res.send('I am Node' + this.node.id + ". Received Block");
             this.node.action_receiveblock(req.body.block);
+            res.send('I am Node' + this.node.id + ". Received Block");
         });
 
         // start logic when rest is ready

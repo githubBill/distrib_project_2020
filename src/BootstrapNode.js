@@ -4,6 +4,7 @@ const axios = require('axios').default;
 
 const Node = require("./Node");
 const Transaction = require("./Transaction");
+const Block = require("./Block");
 
 /** @class BootstrapNode @extends {Node} */
 class BootstrapNode extends Node {
@@ -40,8 +41,15 @@ class BootstrapNode extends Node {
         this.contacts[0].publickey = this.wallet.publickey;
         let first_transaction = new Transaction();
         first_transaction.init(this.wallet.privatekey, 0, this.wallet.publickey, 100*this.n, this.contacts[this.id].UTXO.slice());
-        this.blockchain.addTransaction(first_transaction);
+        let last_block =  this.blockchain.getLatestBlock();
+        last_block.transactions.push(first_transaction);
         this.contacts[0].UTXO.push(first_transaction.transaction_outputs[0]);
+        if (last_block.transactions.length == this.blockchain.capacity) {
+            let newblock = new Block();
+            newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
+            newblock.mineBlock(this.blockchain.difficulty);
+            this.blockchain.chain.push(newblock);
+        }
     }
 
     /**
@@ -112,6 +120,7 @@ class BootstrapNode extends Node {
      */
     initialTransactions() {
         for (let i=1; i < this.contacts.length; i++) {
+        //for (let i=1; i<3; i++) {
             this.create_transaction(this.contacts[i].publickey, 100);
         }
     }
