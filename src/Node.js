@@ -215,7 +215,6 @@ class Node {
         let newblock = new Block();
         newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
         newblock.mineBlock(this.blockchain.difficulty);
-        //console.log('I am Node' + this.id + ". newblock index " + newblock.index);
         // broadcast block only if it hasn't received any during mining
         if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
             this.broadcast_block(newblock);
@@ -251,7 +250,10 @@ class Node {
         if (newblock.index == this.blockchain.getLatestBlock().index+1) {   // accept only first received block of mining
             if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
                 this.blockchain.chain.push(newblock);
-            } else {         // blockchain has branches
+                //if (!this.blockchain.isChainValid()) { // blockchain has branches
+
+                //}
+            } else {
                 this.resolve_conflict();
             }
         }
@@ -262,6 +264,16 @@ class Node {
      */
     resolve_conflict() {
         console.log('I am Node' + this.id + ". Resolving conflict");
+        for (let id=0; id < this.contacts.length; id++) {
+            let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/askedblockchain";
+            axios.post(url, {
+                blockchain:   this.blockchain
+            }).then((response) => {
+                if (response.data.length >= this.blockchain.chain.length) {
+                    this.blockchain.import(response.data);
+                }
+            });
+        }
     }
 
     /**

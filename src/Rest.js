@@ -73,7 +73,10 @@ class Rest {
             this.node.action_receiveblock(req.body.block);
             res.send('I am Node' + this.node.id + ". Received Block");
         });
-
+        // gets activated when a block is broadcasted
+        this.app.post('/backend/askedblockchain', (req, res) => {
+            res.send(this.node.blockchain.getProperties());
+        });
         // start logic when rest is ready
         this.app.listen(this.node.port, this.node.sendContact());
     }

@@ -85,9 +85,7 @@ class Blockchain {
         let properties = {
             chain:      this.chain,
             capacity:   this.capacity,
-            difficulty: this.difficulty,
-            lastBlock:  this.getLatestBlock(),
-            valid:      this.isChainValid()
+            difficulty: this.difficulty
         };
         return properties;
     }
