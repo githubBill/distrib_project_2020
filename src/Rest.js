@@ -28,7 +28,7 @@ class Rest {
             res.send('I am Node' + this.node.id + ". Listening on ip " + this.node.ip + " and port " + this.node.port);
         });
 
-        // for debugging
+        //////// DEBUGGING
         // shows node properties for debugging purposes
         this.app.get('/debug', (req, res) => {
             res.send(this.node.getProperties());
@@ -41,15 +41,30 @@ class Rest {
         this.app.get('/debug/blockchain', (req, res) => {
             res.send(this.node.getProperties().blockchain);
         });
+        ////////////////
 
+        //////// CLIENT
         // does a transaction with amount to node with id
-        this.app.get('/client/doTransaction/:id-:amount', (req, res) => {
+        this.app.get('/transaction/:id-:amount', (req, res) => {
             let id = req.params.id;
             let receiver_address = this.node.contacts[id].publickey;
             let amount = parseInt(req.params.amount);
             this.node.create_transaction(receiver_address, amount);
             res.send("I am node" + this.node.id + ". Doing transaction to " + id + " with amount " + amount);
         });
+        // view last transactions
+        this.app.get('/view', (req, res) => {
+            let last_transactions = Object.assign({}, this.node.view_last_transactions());
+            res.send(last_transactions);
+        });
+        // show balance
+        this.app.get('/balance', (req, res) => {
+            let balance_info = {
+                balance:    this.node.show_balance()
+            };
+            res.send(balance_info);
+        });
+        ////////////////
 
         // gets activated when all nodes have been created
         this.app.post('/backend/receivecontacts', (req, res) => {
@@ -73,6 +88,16 @@ class Rest {
             this.node.action_receiveblock(req.body.block);
             res.send('I am Node' + this.node.id + ". Received Block");
         });
+        // gets activated when a block is broadcasted
+        this.app.post('/backend/askedblockchain', (req, res) => {
+            res.send(this.node.blockchain.getProperties());
+        });
+        // gets activated when a block is broadcasted
+        this.app.post('/backend/readfile', (req, res) => {
+            this.node.read_file();
+            res.send("read file");
+        });
+
 
         // start logic when rest is ready
         this.app.listen(this.node.port, this.node.sendContact());
