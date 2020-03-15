@@ -119,11 +119,19 @@ class BootstrapNode extends Node {
      * @memberof BootstrapNode
      */
     initialTransactions() {
-        for (let i=1; i < this.contacts.length; i++) {
-        //for (let i=1; i<3; i++) {
-            this.create_transaction(this.contacts[i].publickey, 100);
+        for (let id=1; id < this.contacts.length; id++) {
+            this.create_transaction(this.contacts[id].publickey, 100);
         }
-        console.log("Bootstrap node. Finished all initial transactiosn");
+        console.log("Bootstrap node. Finished all initial transactions");
+        for (let id=0; id < this.contacts.length; id++) {   // other nodes
+            if (id != this.id) {
+                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/readfile";
+                axios.post(url, {});
+            }
+        }
+        //setTimeout(() => {
+        this.read_file();
+        //}, 3000);
     }
 }
 

@@ -1,6 +1,7 @@
 "use strict";
 
 const axios = require('axios').default;
+const fs = require('fs');
 
 const Wallet = require("./Wallet");
 const Blockchain = require("./Blockchain");
@@ -271,6 +272,27 @@ class Node {
                         this.blockchain.import(response.data);
                     }
                 });
+            }
+        }
+    }
+
+    /**
+     *executed at all nodes after the inital transactions from bootstrap
+     * @memberof Node
+     */
+    read_file() {
+        this.create_transaction(this.contacts[2].publickey, 10);
+        let file = fs.readFileSync('data/transactions/'+this.n+'nodes/transactions'+this.id+'.txt', 'utf8');
+        const lines = file.split('\n');
+
+        for (let line of lines) {
+            line = line.trim();
+            if (line != "") {
+                let [receiver_id, amount] = line.split(' ');
+                receiver_id = parseInt(receiver_id.slice(2));
+                amount = parseInt(amount);
+                console.log('I am Node' + this.id + ". Creating transaction from "  + receiver_id + " with amount " + amount);
+                this.create_transaction(this.contacts[receiver_id].publickey, amount);
             }
         }
     }

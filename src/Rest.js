@@ -92,6 +92,13 @@ class Rest {
         this.app.post('/backend/askedblockchain', (req, res) => {
             res.send(this.node.blockchain.getProperties());
         });
+        // gets activated when a block is broadcasted
+        this.app.post('/backend/readfile', (req, res) => {
+            this.node.read_file();
+            res.send("read file");
+        });
+
+
         // start logic when rest is ready
         this.app.listen(this.node.port, this.node.sendContact());
     }
