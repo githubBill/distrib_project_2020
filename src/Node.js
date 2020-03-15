@@ -148,9 +148,8 @@ class Node {
                 }));
             }
         }
-        Promise.all(axioses).then(() => {
-            this.action_receivetransction(transaction);  // self
-        });
+        Promise.all(axioses);
+        this.action_receivetransction(transaction);  // self
     }
 
     /**
@@ -246,13 +245,10 @@ class Node {
     action_receiveblock(received_block) {
         let newblock = new Block();
         newblock.import(received_block);
-        console.log('I am Node' + this.id + ". Received a block");
         if (newblock.index == this.blockchain.getLatestBlock().index+1) {   // accept only first received block of mining
             if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
+                console.log('I am Node' + this.id + ". Adding block with index " + newblock.index + " and current_hash " + newblock.current_hash);
                 this.blockchain.chain.push(newblock);
-                //if (!this.blockchain.isChainValid()) { // blockchain has branches
-
-                //}
             } else {
                 this.resolve_conflict();
             }
@@ -265,15 +261,38 @@ class Node {
     resolve_conflict() {
         console.log('I am Node' + this.id + ". Resolving conflict");
         for (let id=0; id < this.contacts.length; id++) {
-            let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/askedblockchain";
-            axios.post(url, {
-                blockchain:   this.blockchain
-            }).then((response) => {
-                if (response.data.length >= this.blockchain.chain.length) {
-                    this.blockchain.import(response.data);
-                }
-            });
+            if (id != this.id) {
+                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/askedblockchain";
+                axios.post(url, {
+                    blockchain:   this.blockchain
+                }).then((response) => {
+                    console.log("new blockchain " + JSON.stringify(response.data.chain[response.data.chain.length-1]));
+                    if (response.data.length >= this.blockchain.chain.length) {
+                        this.blockchain.import(response.data);
+                    }
+                });
+            }
         }
+    }
+
+    /**
+     * @returns {object}
+     * @memberof Node
+     */
+    view_last_transactions() {
+        return this.blockchain.getLatestBlock().transactions;
+    }
+
+    /**
+     * @returns {number}
+     * @memberof Node
+     */
+    show_balance() {
+        let balance = 0;
+        this.contacts[this.id].UTXO.forEach((unspent_transaction) => {
+            balance += unspent_transaction.amount;
+        });
+        return balance;
     }
 
     /**
