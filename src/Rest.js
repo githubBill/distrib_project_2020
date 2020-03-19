@@ -25,7 +25,34 @@ class Rest {
      */
     init() {
         this.app.get('/', (req, res) => {
-            res.send('I am Node' + this.node.id + ". Listening on ip " + this.node.ip + " and port " + this.node.port);
+            //res.send('I am Node' + this.node.id + ". Listening on ip " + this.node.ip + " and port " + this.node.port);
+            let html=`
+            I am node${this.id}
+            <br/>
+            <form action="/transaction/" method="get">
+                <label for="id">Recipient ID:</label><br>
+                <input type="number" id="id" name="id"><br>
+                <label for="amount">amount:</label><br>
+                <input type="number" id="amount" name="amount">
+                <input type="submit" value="Submit">
+            </form>
+            <br/>
+
+            <br/>
+            <a href="/view">View Transactions of Last Block</a>
+            <br/>
+            <a href="/balance">Show Wallet Balance</a>
+            <br/>
+            <a href="/help">Show Help</a>
+
+            <br/>
+            <a href="/debug">Debug</a>
+            <br/>
+            <a href="/debug/contacts">Debug Contacts</a>
+            <br/>
+            <a href="/debug/blockchain">Debug Blockchain</a>
+            `;
+            res.send(html);
         });
 
         //////// DEBUGGING
@@ -45,10 +72,10 @@ class Rest {
 
         //////// CLIENT
         // does a transaction with amount to node with id
-        this.app.get('/transaction/:id-:amount', (req, res) => {
-            let id = req.params.id;
+        this.app.get('/transaction', (req, res) => {
+            let id = parseInt(req.query.id);
             let receiver_address = this.node.contacts[id].publickey;
-            let amount = parseInt(req.params.amount);
+            let amount = parseInt(req.query.amount);
             this.node.create_transaction(receiver_address, amount);
             res.send("I am node" + this.node.id + ". Doing transaction to " + id + " with amount " + amount);
         });
@@ -63,6 +90,45 @@ class Rest {
                 balance:    this.node.show_balance()
             };
             res.send(balance_info);
+        });
+        // show help
+        this.app.get('/help', (req, res) => {
+            let html = `
+            /transaction/<recipient_address>:<amount><br/>
+            New transaction: Στείλε στο recipient_address wallet το ποσό amount από NBC coins που θα πάρει από
+            το wallet sender_address. Θα καλεί συνάρτηση create_transaction στο backend που θα
+            υλοποιεί την παραπάνω λειτουργία.<br/><br/>
+
+            /view/<br/>
+            View last transactions: Τύπωσε τα transactions που περιέχονται στο τελευταίο επικυρωμένο block του
+            noobcash blockchain. Καλεί τη συνάρτηση view_transactions() στο backend που υλοποιεί την
+            παραπάνω λειτουργία.<br/><br/>
+
+            /balance/<br/>
+            Show balance: Τύπωσε το υπόλοιπο του wallet.<br/><br/>
+
+            /help/<br/>
+            Επεξήγηση των παραπάνω εντολών.
+            `;
+            res.send(html);
+        });
+        // show measurements
+        this.app.get('/measurements', (req, res) => {
+            let throughput = this.node.count_transactions/this.node.transactions_time;
+            let total_block_time = 0;
+            this.node.block_times.forEach(block_time => {
+                total_block_time += block_time;
+            });
+            // mean block_time
+            let block_time = total_block_time / this.node.block_times.length;
+            let measurements_info = {
+                count_transactions: this.node.count_transactions,
+                transactions_time: this.node.transactions_time,
+                block_times: this.node.block_times,
+                throughput: throughput,
+                block_time: block_time
+            };
+            res.send(measurements_info);
         });
         ////////////////
 

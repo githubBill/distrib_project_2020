@@ -47,6 +47,9 @@ class Node {
         /** @type {object[]} */
         this.pending_transactions = [];
         this.finished_transactions = true;
+        this.count_transactions = 0;
+        this.transactions_time = 0;
+        this.block_times = [];
         Object.seal(this);
     }
 
@@ -200,7 +203,11 @@ class Node {
             this.contacts[sender_i].UTXO.push(transaction.transaction_outputs[1]);
             // mine new block if last_block is full
             if (last_block.transactions.length == this.blockchain.capacity) {
+                let start_time = Date.now();
                 this.mine_block();
+                let finish_time = Date.now();
+                let block_time = (finish_time - start_time) / 1000;
+                this.block_times.push(block_time);
             }
         } else {
             console.log('I am Node' + this.id + ". Transaction is not valid");
@@ -285,9 +292,11 @@ class Node {
         let file = fs.readFileSync('data/transactions/'+this.n+'nodes/transactions'+this.id+'.txt', 'utf8');
         const lines = file.split('\n');
 
+        let start_time = Date.now();
         for (let line of lines) {
             line = line.trim();
             if (line != "") {
+                this.count_transactions++;
                 let [receiver_id, amount] = line.split(' ');
                 receiver_id = parseInt(receiver_id.slice(2));
                 amount = parseInt(amount);
@@ -295,6 +304,8 @@ class Node {
                 this.create_transaction(this.contacts[receiver_id].publickey, amount);
             }
         }
+        let finish_time = Date.now();
+        this.transactions_time = (finish_time - start_time)/1000;
     }
 
     /**
@@ -315,6 +326,31 @@ class Node {
             balance += unspent_transaction.amount;
         });
         return balance;
+    }
+
+    /**
+     * @returns {string}
+     * @memberof Node
+     */
+    show_help() {
+        let help = `
+        /transaction/<recipient_address>:<amount><br/>
+        New transaction: Στείλε στο recipient_address wallet το ποσό amount από NBC coins που θα πάρει από
+        το wallet sender_address. Θα καλεί συνάρτηση create_transaction στο backend που θα
+        υλοποιεί την παραπάνω λειτουργία.<br/><br/>
+
+        /view/<br/>
+        View last transactions: Τύπωσε τα transactions που περιέχονται στο τελευταίο επικυρωμένο block του
+        noobcash blockchain. Καλεί τη συνάρτηση view_transactions() στο backend που υλοποιεί την
+        παραπάνω λειτουργία.<br/><br/>
+
+        /balance/<br/>
+        Show balance: Τύπωσε το υπόλοιπο του wallet.<br/><br/>
+
+        /help/<br/>
+        Επεξήγηση των παραπάνω εντολών.
+        `;
+        return help;
     }
 
     /**
