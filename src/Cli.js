@@ -53,15 +53,15 @@ class Cli {
         t <recipient_address> <amount>
         New transaction: Στείλε στο recipient_address wallet το ποσό amount από NBC coins που θα πάρει από
         το wallet sender_address. Θα καλεί συνάρτηση create_transaction στο backend που θα
-        υλοποιεί την παραπάνω λειτουργία.<br/><br/>
+        υλοποιεί την παραπάνω λειτουργία.
 
         view
         View last transactions: Τύπωσε τα transactions που περιέχονται στο τελευταίο επικυρωμένο block του
         noobcash blockchain. Καλεί τη συνάρτηση view_transactions() στο backend που υλοποιεί την
-        παραπάνω λειτουργία.<br/><br/>
+        παραπάνω λειτουργία.
 
         balance
-        Show balance: Τύπωσε το υπόλοιπο του wallet.<br/><br/>
+        Show balance: Τύπωσε το υπόλοιπο του wallet.
 
         help
         Επεξήγηση των παραπάνω εντολών.
