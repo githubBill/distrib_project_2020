@@ -21,7 +21,6 @@
         "no-unused-vars":           "warn",
         "no-template-curly-in-string":"error",
         "block-scoped-var":         "error",
-        "class-methods-use-this":   "error",
         "consistent-return":        "error",
         "no-param-reassign":        "error",
         "no-invalid-this":          "error",

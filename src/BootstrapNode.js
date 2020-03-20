@@ -129,9 +129,7 @@ class BootstrapNode extends Node {
                 axios.post(url, {});
             }
         }
-        //setTimeout(() => {
         this.read_file();
-        //}, 3000);
     }
 }
 
