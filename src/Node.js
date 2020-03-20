@@ -7,6 +7,7 @@ const Wallet = require("./Wallet");
 const Blockchain = require("./Blockchain");
 const Transaction = require("./Transaction");
 const Rest = require("./Rest");
+const Cli = require("./Cli");
 const Block = require("./Block");
 
 /** @class Node */
@@ -44,6 +45,8 @@ class Node {
         this.blockchain = new Blockchain();
         /** @type {Rest} */
         this.rest = new Rest(this);
+        /** @type {Cli} */
+        this.cli = new Cli(this);
         /** @type {object[]} */
         this.pending_transactions = [];
         this.finished_transactions = true;
@@ -306,6 +309,7 @@ class Node {
         }
         let finish_time = Date.now();
         this.transactions_time = (finish_time - start_time)/1000;
+        this.cli.init();
     }
 
     /**
