@@ -1,0 +1,7 @@
+ip for vm 1: 83.212.76.173
+
+vm 1 pass: gdQmxKLj90	node12020
+vm 2 pass: 7jCihtmUda	node22020
+vm 3 pass: MNZSabhE6q	node32020
+vm 4 pass: iVrumkKO49	node42020
+vm 5 pass: pwC8QPs3m9	node52020
