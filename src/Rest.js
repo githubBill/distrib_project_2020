@@ -44,7 +44,8 @@ class Rest {
             <a href="/balance">Show Wallet Balance</a>
             <br/>
             <a href="/help">Show Help</a>
-
+            <br/>
+            <a href="/measurements">Show Measurements</a>
             <br/>
             <a href="/debug">Debug</a>
             <br/>
