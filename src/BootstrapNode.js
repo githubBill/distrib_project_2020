@@ -47,7 +47,7 @@ class BootstrapNode extends Node {
         if (last_block.transactions.length == this.blockchain.capacity) {
             let newblock = new Block();
             newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
-            newblock.mineBlock(this.blockchain.difficulty);
+            this.blockchain.mineBlock(newblock);
             this.blockchain.chain.push(newblock);
         }
     }
@@ -124,12 +124,9 @@ class BootstrapNode extends Node {
         }
         console.log("Bootstrap node. Finished all initial transactions");
         for (let id=0; id < this.contacts.length; id++) {   // other nodes
-            if (id != this.id) {
-                let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/readfile";
-                axios.post(url, {});
-            }
+            let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/readfile";
+            axios.post(url, {});
         }
-        this.read_file();
     }
 }
 
