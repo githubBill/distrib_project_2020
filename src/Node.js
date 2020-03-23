@@ -146,16 +146,14 @@ class Node {
      * @memberof Node
      */
     broadcast_transaction(transaction) {
-        let axioses = [];
         for (let id=0; id < this.contacts.length; id++) {       // other nodes
             if (id != this.id) {
                 let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivetransaction";
-                axioses.push(axios.post(url, {
+                axios.post(url, {
                     transaction:   transaction
-                }));
+                });
             }
         }
-        Promise.all(axioses);
         this.action_receivetransction(transaction);  // self
     }
 
@@ -224,10 +222,12 @@ class Node {
         console.log('I am Node' + this.id + ". Mining block");
         let newblock = new Block();
         newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
-        newblock.mineBlock(this.blockchain.difficulty);
-        // broadcast block only if it hasn't received any during mining
-        if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
-            this.broadcast_block(newblock);
+        if (this.blockchain.mineBlock(newblock)) {
+            // if mining was successful
+            // broadcast block only if it hasn't received any during mining
+            if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
+                this.broadcast_block(newblock);
+            }
         }
     }
 
@@ -303,7 +303,7 @@ class Node {
                 let [receiver_id, amount] = line.split(' ');
                 receiver_id = parseInt(receiver_id.slice(2));
                 amount = parseInt(amount);
-                console.log('I am Node' + this.id + ". Creating transaction from "  + receiver_id + " with amount " + amount);
+                console.log('I am Node' + this.id + ". Creating transaction for "  + receiver_id + " with amount " + amount);
                 this.create_transaction(this.contacts[receiver_id].publickey, amount);
             }
         }

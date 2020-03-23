@@ -10,6 +10,7 @@ class Blockchain {
      * @property {object[]} chain
      * @property {number} capacity
      * @property {number} difficulty
+     * @property {string} difficulty_string
      */
     constructor() {
         /** @type {object[]} */
@@ -18,6 +19,8 @@ class Blockchain {
         this.capacity = 0;
         /** @type {number} */
         this.difficulty = 0;
+        /** @type {string} */
+        this.difficulty_string = "";
         Object.seal(this);
     }
 
@@ -32,6 +35,7 @@ class Blockchain {
         this.chain = [genesisblock];
         this.capacity = capacity;
         this.difficulty = difficulty;
+        this.difficulty_string = Array(this.difficulty + 1).join("0");
     }
 
     /**
@@ -74,6 +78,24 @@ class Blockchain {
 			}
 		}
 		return true;
+    }
+
+    /**
+     * @param {Block} block
+     * @returns {boolean}
+     * @memberof Blockchain
+     */
+    mineBlock(block) {
+        // while hash doesn't start with difficulty number of "0"
+        while (!block.current_hash.startsWith(this.difficulty_string)) {
+            if (block.index != this.getLatestBlock().index+1) {
+                return false;   // if have received any other block
+            }
+            block.nonce++;
+            block.current_hash = block.calculateHash();
+        }
+        console.log("BLOCK MINED: " + block.current_hash);
+        return true;
     }
 
     // for debugging

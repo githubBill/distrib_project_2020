@@ -78,18 +78,6 @@ class Block {
     }
 
     /**
-     * @param {number} difficulty
-     * @memberof Block
-     */
-    mineBlock(difficulty) {
-        while (this.current_hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
-            this.nonce++;
-            this.current_hash = this.calculateHash();
-        }
-        console.log("BLOCK MINED: " + this.current_hash);
-    }
-
-    /**
      * @param {string} received_previoushash
      * @returns {boolean}
      * @memberof Block
