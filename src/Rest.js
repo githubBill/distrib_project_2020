@@ -77,8 +77,8 @@ class Rest {
             let id = parseInt(req.query.id);
             let receiver_address = this.node.contacts[id].publickey;
             let amount = parseInt(req.query.amount);
-            this.node.create_transaction(receiver_address, amount);
             res.send("I am node" + this.node.id + ". Doing transaction to " + id + " with amount " + amount);
+            this.node.create_transaction(receiver_address, amount);
         });
         // view last transactions
         this.app.get('/view', (req, res) => {
@@ -137,25 +137,25 @@ class Rest {
 
         // gets activated when all nodes have been created
         this.app.post('/backend/receivecontacts', (req, res) => {
+            res.send('I am Node' + this.node.id + ". Received contacts");
             console.log('I am Node' + this.node.id + ". Received contacts");
             this.node.action_receivecontacts(req.body.contacts);
-            res.send('I am Node' + this.node.id + ". Received contacts");
         });
         // gets activated when all nodes have been created
         this.app.post('/backend/receiveblockchain', (req, res) => {
+            res.send('I am Node' + this.node.id + ". Received Blockchain");
             console.log('I am Node' + this.node.id + ". Received Blockchain");
             this.node.action_receiveblockchain(req.body.blockchain);
-            res.send('I am Node' + this.node.id + ". Received Blockchain");
         });
         // gets activated when a transaction is broadcasted
         this.app.post('/backend/receivetransaction', (req, res) => {
-            this.node.action_receivetransction(req.body.transaction);
             res.send('I am Node' + this.node.id + ". Received Transaction");
+            this.node.action_receivetransction(req.body.transaction);
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/receiveblock', (req, res) => {
-            this.node.action_receiveblock(req.body.block);
             res.send('I am Node' + this.node.id + ". Received Block");
+            this.node.action_receiveblock(req.body.block);
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/askedblockchain', (req, res) => {
@@ -163,8 +163,8 @@ class Rest {
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/readfile', (req, res) => {
-            this.node.read_file();
             res.send("read file");
+            this.node.read_file();
         });
 
 

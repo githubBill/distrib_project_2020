@@ -110,6 +110,7 @@ class Node {
 
         this.blockchain.init(capacity, difficulty);
         this.rest.init();
+        this.cli.init();
     }
 
     //
@@ -155,6 +156,7 @@ class Node {
 
     /** @memberof Node */
     async create_transactions() {
+        console.log('I am Node' + this.id + ". transactions_to_create left "  + this.transactions_to_create.length);
         if (this.transactions_to_create.length > 0) {
             this.count_transactions++;
             let transaction_to_create = this.transactions_to_create.shift();
@@ -166,7 +168,6 @@ class Node {
             console.log('I am Node' + this.id + ". Finished creating all transactions");
             this.finish_time = Date.now()/1000;
             this.transactions_time = (this.finish_time - this.start_time);
-            this.cli.init();
         }
     }
 
@@ -246,11 +247,7 @@ class Node {
             this.contacts[sender_i].UTXO.push(transaction.transaction_outputs[1]);
             // mine new block if last_block is full
             if (last_block.transactions.length == this.blockchain.capacity) {
-                let start_time = Date.now();
                 this.mine_block();
-                let finish_time = Date.now();
-                let block_time = (finish_time - start_time) / 1000;
-                this.block_times.push(block_time);
             } else {
                 this.end_transaction();
             }
@@ -264,10 +261,15 @@ class Node {
      * @memberof Node
      */
     async mine_block() {
+        console.log('I am Node' + this.id + ". Started mining");
+        let start_time = Date.now() / 1000;
         let newblock = new Block();
         newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
         const isBlockMined = await this.blockchain.mineBlock(newblock);
         if (isBlockMined) {
+            let finish_time = Date.now() / 1000;
+            let block_time = (finish_time - start_time);
+            this.block_times.push(block_time);
             console.log('I am Node' + this.id + ". Mined block with index " + newblock.index + " and hash " + newblock.current_hash);
             // if mining was successful
             // broadcast block only if it hasn't received any during mining
@@ -305,17 +307,13 @@ class Node {
         let newblock = new Block();
         newblock.import(received_block);
         console.log('I am Node' + this.id + ". Received block with index " + newblock.index + " and current_hash " + newblock.current_hash);
-        //if (newblock.index == this.blockchain.getLatestBlock().index+1) {   // accept only first received block of mining
-            if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
-                console.log('I am Node' + this.id + ". Adding block with index " + newblock.index + " and current_hash " + newblock.current_hash);
-                this.blockchain.chain.push(newblock);
-                this.end_transaction();
-            } else {
-                this.resolve_conflict();
-            }
-        //} else {
-        //    this.end_transaction();
-        //}
+        if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
+            console.log('I am Node' + this.id + ". Adding block with index " + newblock.index + " and current_hash " + newblock.current_hash);
+            this.blockchain.chain.push(newblock);
+            this.end_transaction();
+        } else {
+            this.resolve_conflict();
+        }
     }
 
     /**
