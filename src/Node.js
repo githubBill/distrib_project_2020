@@ -49,6 +49,8 @@ class Node {
         this.cli = new Cli(this);
         /** @type {object[]} */
         this.pending_transactions = [];
+        this.transactions_to_create = [];
+        this.started_creating_transactions = false;
         this.finished_transactions = true;
         this.count_transactions = 0;
         this.transactions_time = 0;
@@ -86,6 +88,25 @@ class Node {
             publickey: this.wallet.publickey,
             UTXO:   []
         };
+
+        // add transactions from file to list
+        let file = fs.readFileSync('data/transactions/'+this.n+'nodes/transactions'+this.id+'.txt', 'utf8');
+        const lines = file.split('\n');
+        for (let line of lines) {
+            line = line.trim();
+            if (line != "") {
+                this.count_transactions++;
+                let [receiver_id, amount] = line.split(' ');
+                receiver_id = parseInt(receiver_id.slice(2));
+                amount = parseInt(amount);
+                let transaction_to_create = {
+                    receiver_id: receiver_id,
+                    amount: amount
+                };
+                this.transactions_to_create.push(transaction_to_create);
+            }
+        }
+
         this.blockchain.init(capacity, difficulty);
         this.rest.init();
     }
@@ -128,6 +149,19 @@ class Node {
             this.blockchain.import(blockchain);
         } else {
             console.log('I am Node' + this.id + ". Received Blockchain is not valid");
+        }
+    }
+
+    /** @memberof Node */
+    create_transactions() {
+        if (this.transactions_to_create.length > 0) {
+            let transaction_to_create = this.transactions_to_create.shift();
+            let receiver_id = transaction_to_create.receiver_id;
+            let amount = transaction_to_create.amount;
+            console.log('I am Node' + this.id + ". Creating transaction for "  + receiver_id + " with amount " + amount);
+            this.create_transaction(this.contacts[receiver_id].publickey, amount);
+        } else {
+            console.log('I am Node' + this.id + ". Finished creating all transactions");
         }
     }
 
@@ -182,6 +216,9 @@ class Node {
             this.execute_pending_transactions();
         } else {
             this.finished_transactions = true;
+            if (this.started_creating_transactions) {
+                this.create_transactions();
+            }
         }
     }
 
@@ -290,23 +327,10 @@ class Node {
      *executed at all nodes after the inital transactions from bootstrap
      * @memberof Node
      */
-    read_file() {
-        this.create_transaction(this.contacts[2].publickey, 10);
-        let file = fs.readFileSync('data/transactions/'+this.n+'nodes/transactions'+this.id+'.txt', 'utf8');
-        const lines = file.split('\n');
-
+    async read_file() {
         let start_time = Date.now();
-        for (let line of lines) {
-            line = line.trim();
-            if (line != "") {
-                this.count_transactions++;
-                let [receiver_id, amount] = line.split(' ');
-                receiver_id = parseInt(receiver_id.slice(2));
-                amount = parseInt(amount);
-                console.log('I am Node' + this.id + ". Creating transaction for "  + receiver_id + " with amount " + amount);
-                this.create_transaction(this.contacts[receiver_id].publickey, amount);
-            }
-        }
+        this.started_creating_transactions = true;
+        this.create_transactions();
         let finish_time = Date.now();
         this.transactions_time = (finish_time - start_time)/1000;
         this.cli.init();
