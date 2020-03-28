@@ -1,5 +1,6 @@
 "use strict";
 
+require('events').EventEmitter.prototype._maxListeners = 100;
 const { spawn } = require('child_process');
 
 let n = parseInt(process.argv[2]);

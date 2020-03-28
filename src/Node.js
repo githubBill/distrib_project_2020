@@ -154,7 +154,7 @@ class Node {
     }
 
     /** @memberof Node */
-    create_transactions() {
+    async create_transactions() {
         if (this.transactions_to_create.length > 0) {
             this.count_transactions++;
             let transaction_to_create = this.transactions_to_create.shift();
@@ -175,7 +175,7 @@ class Node {
      * @param {number} amount
      * @memberof Node
      */
-    create_transaction(receiver_address, amount) {
+    async create_transaction(receiver_address, amount) {
         let transaction = new Transaction();
         transaction.init(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount, this.contacts[this.id].UTXO.slice());
         this.broadcast_transaction(transaction);
@@ -184,7 +184,7 @@ class Node {
      * @param {Transaction} transaction
      * @memberof Node
      */
-    broadcast_transaction(transaction) {
+    async broadcast_transaction(transaction) {
         for (let id=0; id < this.contacts.length; id++) {       // other nodes
             if (id != this.id) {
                 let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivetransaction";
@@ -200,7 +200,7 @@ class Node {
      * @param {object} received_transaction
      * @memberof Node
      */
-    action_receivetransction(received_transaction) {
+    async action_receivetransction(received_transaction) {
         console.log('I am Node' + this.id + ". Received Trabsaction");
         let transaction = new Transaction();
         transaction.import(received_transaction);
@@ -213,12 +213,12 @@ class Node {
     /**
      * @memberof Node
      */
-    execute_pending_transactions() {
+    async execute_pending_transactions() {
         if (this.pending_transactions.length > 0) {
             this.finished_transactions = false;
             let transaction = this.pending_transactions.shift();
             this.execute_transaction(transaction);
-            this.execute_pending_transactions();
+            //this.execute_pending_transactions();
         } else {
             this.finished_transactions = true;
             if (this.started_creating_transactions) {
@@ -231,7 +231,7 @@ class Node {
      * @param {Transaction} transaction
      * @memberof Node
      */
-    execute_transaction(transaction) {
+    async execute_transaction(transaction) {
         let receiver_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[0].recipient);
         let sender_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[1].recipient);
         console.log('I am Node' + this.id + ". Executing Trabsaction from node" + sender_i + " to node" + receiver_i);
@@ -251,25 +251,33 @@ class Node {
                 let finish_time = Date.now();
                 let block_time = (finish_time - start_time) / 1000;
                 this.block_times.push(block_time);
+            } else {
+                this.end_transaction();
             }
         } else {
             console.log('I am Node' + this.id + ". Transaction is not valid");
+            this.end_transaction();
         }
     }
 
     /**
      * @memberof Node
      */
-    mine_block() {
-        console.log('I am Node' + this.id + ". Mining block");
+    async mine_block() {
         let newblock = new Block();
         newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
-        if (this.blockchain.mineBlock(newblock)) {
+        const isBlockMined = await this.blockchain.mineBlock(newblock);
+        if (isBlockMined) {
+            console.log('I am Node' + this.id + ". Mined block with index " + newblock.index + " and hash " + newblock.current_hash);
             // if mining was successful
             // broadcast block only if it hasn't received any during mining
             if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
                 this.broadcast_block(newblock);
+            } else {
+                this.end_transaction();
             }
+        } else {
+            this.end_transaction();
         }
     }
 
@@ -277,17 +285,15 @@ class Node {
      * @param {Block} newblock
      * @memberof Node
      */
-    broadcast_block(newblock) {
-        let axioses = [];
+    async broadcast_block(newblock) {
         for (let id=0; id < this.contacts.length; id++) {   // other nodes
             if (id != this.id) {
                 let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receiveblock";
-                axioses.push(axios.post(url, {
+                axios.post(url, {
                     block:   newblock
-                }));
+                });
             }
         }
-        Promise.all(axioses);
         this.action_receiveblock(newblock);  // self
     }
 
@@ -295,37 +301,49 @@ class Node {
      * @param {object} received_block
      * @memberof Node
      */
-    action_receiveblock(received_block) {
+    async action_receiveblock(received_block) {
         let newblock = new Block();
         newblock.import(received_block);
-        if (newblock.index == this.blockchain.getLatestBlock().index+1) {   // accept only first received block of mining
+        console.log('I am Node' + this.id + ". Received block with index " + newblock.index + " and current_hash " + newblock.current_hash);
+        //if (newblock.index == this.blockchain.getLatestBlock().index+1) {   // accept only first received block of mining
             if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
                 console.log('I am Node' + this.id + ". Adding block with index " + newblock.index + " and current_hash " + newblock.current_hash);
                 this.blockchain.chain.push(newblock);
+                this.end_transaction();
             } else {
                 this.resolve_conflict();
             }
-        }
+        //} else {
+        //    this.end_transaction();
+        //}
     }
 
     /**
      * @memberof Node
      */
-    resolve_conflict() {
+    async resolve_conflict() {
         console.log('I am Node' + this.id + ". Resolving conflict");
+        let axioses = [];
         for (let id=0; id < this.contacts.length; id++) {
             if (id != this.id) {
                 let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/askedblockchain";
-                axios.post(url, {
+                axioses.push(axios.post(url, {
                     blockchain:   this.blockchain
                 }).then((response) => {
-                    console.log("new blockchain " + JSON.stringify(response.data.chain[response.data.chain.length-1]));
-                    if (response.data.length >= this.blockchain.chain.length) {
+                    if (response.data.chain.length >= this.blockchain.chain.length) {
                         this.blockchain.import(response.data);
                     }
-                });
+                }));
             }
         }
+        Promise.all(axioses).then(() => {
+            this.end_transaction();
+        });
+    }
+
+    async end_transaction() {
+        console.log('I am Node' + this.id + ". Ended transaction");
+        this.execute_pending_transactions();
     }
 
     /**

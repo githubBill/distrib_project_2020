@@ -70,7 +70,6 @@ class Block {
         let blockdata = {
             index:          this.index,
             timestamp:      this.timestamp,
-            transactions:   this.transactions,
             nonce:          this.nonce,
             previous_hash:  this.previous_hash
         };

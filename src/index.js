@@ -1,5 +1,7 @@
 "use strict";
 
+require('events').EventEmitter.prototype._maxListeners = 100;
+
 const BootstrapNode = require("./BootstrapNode");
 const Node = require("./Node");
 

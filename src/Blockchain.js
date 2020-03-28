@@ -85,7 +85,7 @@ class Blockchain {
      * @returns {boolean}
      * @memberof Blockchain
      */
-    mineBlock(block) {
+    async mineBlock(block) {
         // while hash doesn't start with difficulty number of "0"
         while (!block.current_hash.startsWith(this.difficulty_string)) {
             if (block.index != this.getLatestBlock().index+1) {
@@ -94,7 +94,6 @@ class Blockchain {
             block.nonce++;
             block.current_hash = block.calculateHash();
         }
-        console.log("BLOCK MINED: " + block.current_hash);
         return true;
     }
 
