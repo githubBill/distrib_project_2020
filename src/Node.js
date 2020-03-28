@@ -174,11 +174,11 @@ class Node {
     /**
      * @memberof Node
      */
-    execute_pending_transactions() {
+    async execute_pending_transactions() {
         if (this.pending_transactions.length > 0) {
             this.finished_transactions = false;
             let transaction = this.pending_transactions.shift();
-            this.execute_transaction(transaction);
+            await this.execute_transaction(transaction);
             this.execute_pending_transactions();
         } else {
             this.finished_transactions = true;
@@ -189,7 +189,7 @@ class Node {
      * @param {Transaction} transaction
      * @memberof Node
      */
-    execute_transaction(transaction) {
+    async execute_transaction(transaction) {
         let receiver_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[0].recipient);
         let sender_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[1].recipient);
         console.log('I am Node' + this.id + ". Executing Trabsaction from node" + sender_i + " to node" + receiver_i);
