@@ -53,6 +53,8 @@ class Node {
         this.started_creating_transactions = false;
         this.finished_transactions = true;
         this.count_transactions = 0;
+        this.start_time=0;
+        this.finish_time=0;
         this.transactions_time = 0;
         this.block_times = [];
         Object.seal(this);
@@ -95,7 +97,6 @@ class Node {
         for (let line of lines) {
             line = line.trim();
             if (line != "") {
-                this.count_transactions++;
                 let [receiver_id, amount] = line.split(' ');
                 receiver_id = parseInt(receiver_id.slice(2));
                 amount = parseInt(amount);
@@ -155,6 +156,7 @@ class Node {
     /** @memberof Node */
     create_transactions() {
         if (this.transactions_to_create.length > 0) {
+            this.count_transactions++;
             let transaction_to_create = this.transactions_to_create.shift();
             let receiver_id = transaction_to_create.receiver_id;
             let amount = transaction_to_create.amount;
@@ -162,6 +164,9 @@ class Node {
             this.create_transaction(this.contacts[receiver_id].publickey, amount);
         } else {
             console.log('I am Node' + this.id + ". Finished creating all transactions");
+            this.finish_time = Date.now()/1000;
+            this.transactions_time = (this.finish_time - this.start_time);
+            this.cli.init();
         }
     }
 
@@ -328,12 +333,9 @@ class Node {
      * @memberof Node
      */
     async read_file() {
-        let start_time = Date.now();
+        this.start_time = Date.now()/1000;
         this.started_creating_transactions = true;
         this.create_transactions();
-        let finish_time = Date.now();
-        this.transactions_time = (finish_time - start_time)/1000;
-        this.cli.init();
     }
 
     /**

@@ -124,6 +124,8 @@ class Rest {
             let block_time = total_block_time / this.node.block_times.length;
             let measurements_info = {
                 count_transactions: this.node.count_transactions,
+                start_time: this.node.start_time,
+                finish_time: this.node.finish_time,
                 transactions_time: this.node.transactions_time,
                 block_times: this.node.block_times,
                 throughput: throughput,
