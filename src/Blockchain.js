@@ -1,6 +1,7 @@
 "use strict";
 
 const Block = require("./Block");
+const Utils = require("./Utils");
 
 /** @class Blockchain */
 class Blockchain {
@@ -82,7 +83,6 @@ class Blockchain {
 
     /**
      * @param {Block} block
-     * @returns {boolean}
      * @memberof Blockchain
      */
     async mineBlock(block) {
@@ -93,6 +93,7 @@ class Blockchain {
             }
             block.nonce++;
             block.current_hash = block.calculateHash();
+            await Utils.setImmediatePromise();
         }
         return true;
     }

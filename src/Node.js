@@ -53,6 +53,7 @@ class Node {
         this.started_creating_transactions = false;
         this.finished_transactions = true;
         this.count_transactions = 0;
+        this.count_executed_transactions = 0;
         this.start_time=0;
         this.finish_time=0;
         this.transactions_time = 0;
@@ -233,6 +234,7 @@ class Node {
      * @memberof Node
      */
     async execute_transaction(transaction) {
+        this.count_executed_transactions++;
         let receiver_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[0].recipient);
         let sender_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[1].recipient);
         console.log('I am Node' + this.id + ". Executing Trabsaction from node" + sender_i + " to node" + receiver_i);
@@ -265,22 +267,20 @@ class Node {
         let start_time = Date.now() / 1000;
         let newblock = new Block();
         newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
-        const isBlockMined = await this.blockchain.mineBlock(newblock);
-        if (isBlockMined) {
-            let finish_time = Date.now() / 1000;
-            let block_time = (finish_time - start_time);
-            this.block_times.push(block_time);
-            console.log('I am Node' + this.id + ". Mined block with index " + newblock.index + " and hash " + newblock.current_hash);
-            // if mining was successful
-            // broadcast block only if it hasn't received any during mining
-            if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
-                this.broadcast_block(newblock);
-            } else {
-                this.end_transaction();
+        this.blockchain.mineBlock(newblock).then((isBlockMined) => {
+            if (isBlockMined) {
+                let finish_time = Date.now() / 1000;
+                let block_time = (finish_time - start_time);
+                this.block_times.push(block_time);
+                console.log('I am Node' + this.id + ". Mined block with index " + newblock.index + " and hash " + newblock.current_hash);
+                // if mining was successful
+                // broadcast block only if it hasn't received any during mining
+                if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
+                    this.broadcast_block(newblock);
+                }
             }
-        } else {
-            this.end_transaction();
-        }
+        });
+
     }
 
     /**
@@ -351,7 +351,10 @@ class Node {
     async read_file() {
         this.start_time = Date.now()/1000;
         this.started_creating_transactions = true;
-        this.create_transactions();
+        if (this.finished_transactions) {
+            this.execute_pending_transactions();
+        }
+        //this.create_transactions();
     }
 
     /**

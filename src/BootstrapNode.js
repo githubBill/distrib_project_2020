@@ -118,9 +118,9 @@ class BootstrapNode extends Node {
      *transfer 100 nbc to each node
      * @memberof BootstrapNode
      */
-    initialTransactions() {
+    async initialTransactions() {
         for (let id=1; id < this.contacts.length; id++) {
-            this.create_transaction(this.contacts[id].publickey, 100);
+            await this.create_transaction(this.contacts[id].publickey, 100);
         }
         console.log("Bootstrap node. Finished all initial transactions");
         for (let id=0; id < this.contacts.length; id++) {   // other nodes
