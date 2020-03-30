@@ -197,9 +197,7 @@ class Node {
         let transaction = new Transaction();
         transaction.import(received_transaction);
         this.pending_transactions.push(transaction);
-        console.log("I am Node" + this.id + " HERE1");
         if (this.finished_transactions == true) {
-            console.log("I am Node" + this.id + " HERE");
             this.execute_pending_transactions();
         }
     }
@@ -240,8 +238,7 @@ class Node {
             this.contacts[sender_i].UTXO.push(transaction.transaction_outputs[1]);
             // mine new block if last_block is full
             if (last_block.transactions.length == this.blockchain.capacity) {
-                //this.mine_block(sender_i);
-                this.end_transaction(sender_i);
+                this.mine_block(sender_i);
             } else {
                 this.end_transaction(sender_i);
             }
@@ -259,7 +256,7 @@ class Node {
         let start_time = Date.now() / 1000;
         let newblock = new Block();
         newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
-        this.blockchain.mineBlock(newblock).then((isBlockMined) => {
+        await this.blockchain.mineBlock(newblock).then((isBlockMined) => {
             //if (isBlockMined) {
                 let finish_time = Date.now() / 1000;
                 let block_time = (finish_time - start_time);
@@ -320,8 +317,14 @@ class Node {
         for (let id=0; id < this.contacts.length; id++) {
             if (id != this.id) {
                 let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/askedblockchain";
-                axioses.push(axios.post(url, {
-                    blockchain:   this.blockchain
+                axioses.push(axios( {
+                    method: "post",
+                    url: url,
+                    data: {
+                        blockchain:   this.blockchain
+                    },
+                    maxContentLength: 100000000,
+                    maxBodyLength: 1000000000
                 }).then((response) => {
                     if (response.data.chain.length >= this.blockchain.chain.length) {
                         this.blockchain.import(response.data);
