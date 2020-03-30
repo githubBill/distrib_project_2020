@@ -52,7 +52,7 @@ class Node {
         this.transactions_to_create = [];
         this.finished_transactions = true;
         this.transaction_ended_replies = 0;
-        this.count_transactions = 0;
+        this.count_created_transactions = 0;
         this.count_executed_transactions = 0;
         this.start_time=0;
         this.finish_time=0;
@@ -142,7 +142,7 @@ class Node {
     async create_transactions() {
         console.log('I am Node' + this.id + ". transactions_to_create left "  + this.transactions_to_create.length);
         if (this.transactions_to_create.length > 0) {
-            this.count_transactions++;
+            this.count_created_transactions++;
             let transaction_to_create = this.transactions_to_create.shift();
             let receiver_id = transaction_to_create.receiver_id;
             let amount = transaction_to_create.amount;
@@ -223,7 +223,6 @@ class Node {
      * @memberof Node
      */
     async execute_transaction(transaction) {
-        this.count_executed_transactions++;
         let receiver_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[0].recipient);
         let sender_i = this.contacts.findIndex(i => i.publickey === transaction.transaction_outputs[1].recipient);
         console.log('I am Node' + this.id + ". Executing Trabsaction from node" + sender_i + " to node" + receiver_i);
@@ -345,6 +344,7 @@ class Node {
         Promise.all(axioses).then(() => {
             this.execute_pending_transactions();
         });
+        this.count_executed_transactions++;
     }
 
     async action_transactionended() {

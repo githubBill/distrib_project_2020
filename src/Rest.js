@@ -63,7 +63,15 @@ class Rest {
         });
         // shows node.contacts properties for debugging purposes
         this.app.get('/debug/contacts', (req, res) => {
-            res.send(this.node.getProperties().contacts);
+            let contacts = Array.from(this.node.contacts);
+            for (let id=0; id<contacts.length; id++) {
+                let balance=0;
+                for (let j=0; j<contacts[id].UTXO.length; j++) {
+                    balance += contacts[id].UTXO[j].amount;
+                }
+                contacts[id].balance = balance;
+            }
+            res.send(contacts);
         });
         // shows node.blockchain properties for debugging purposes
         this.app.get('/debug/blockchain', (req, res) => {
@@ -115,7 +123,7 @@ class Rest {
         });
         // show measurements
         this.app.get('/measurements', (req, res) => {
-            let throughput = this.node.count_transactions/this.node.transactions_time;
+            let throughput = this.node.count_created_transactions/this.node.transactions_time;
             let total_block_time = 0;
             this.node.block_times.forEach(block_time => {
                 total_block_time += block_time;
@@ -123,7 +131,7 @@ class Rest {
             // mean block_time
             let block_time = total_block_time / this.node.block_times.length;
             let measurements_info = {
-                count_transactions: this.node.count_transactions,
+                count_created_transactions: this.node.count_created_transactions,
                 count_executed_transactions: this.node.count_executed_transactions,
                 start_time: this.node.start_time,
                 finish_time: this.node.finish_time,
