@@ -50,8 +50,8 @@ class Node {
         /** @type {object[]} */
         this.pending_transactions = [];
         this.transactions_to_create = [];
-        this.started_creating_transactions = false;
         this.finished_transactions = true;
+        this.transaction_ended_replies = 0;
         this.count_transactions = 0;
         this.count_executed_transactions = 0;
         this.start_time=0;
@@ -91,23 +91,6 @@ class Node {
             publickey: this.wallet.publickey,
             UTXO:   []
         };
-
-        // add transactions from file to list
-        let file = fs.readFileSync('data/transactions/'+this.n+'nodes/transactions'+this.id+'.txt', 'utf8');
-        const lines = file.split('\n');
-        for (let line of lines) {
-            line = line.trim();
-            if (line != "") {
-                let [receiver_id, amount] = line.split(' ');
-                receiver_id = parseInt(receiver_id.slice(2));
-                amount = parseInt(amount);
-                let transaction_to_create = {
-                    receiver_id: receiver_id,
-                    amount: amount
-                };
-                this.transactions_to_create.push(transaction_to_create);
-            }
-        }
 
         this.blockchain.init(capacity, difficulty);
         this.rest.init();
@@ -167,6 +150,9 @@ class Node {
             this.create_transaction(this.contacts[receiver_id].publickey, amount);
         } else {
             console.log('I am Node' + this.id + ". Finished creating all transactions");
+            if (this.id == 0 && this.finish_time == 0) { // only on bootstrap after finished initial transactions
+                this.start_read_file();
+            }
             this.finish_time = Date.now()/1000;
             this.transactions_time = (this.finish_time - this.start_time);
         }
@@ -178,6 +164,7 @@ class Node {
      * @memberof Node
      */
     async create_transaction(receiver_address, amount) {
+        this.transaction_ended_replies = 0;
         let transaction = new Transaction();
         transaction.init(this.wallet.privatekey, this.wallet.publickey, receiver_address, amount, this.contacts[this.id].UTXO.slice());
         this.broadcast_transaction(transaction);
@@ -187,15 +174,18 @@ class Node {
      * @memberof Node
      */
     async broadcast_transaction(transaction) {
+        let axioses = [];
         for (let id=0; id < this.contacts.length; id++) {       // other nodes
             if (id != this.id) {
                 let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/receivetransaction";
-                axios.post(url, {
+                axioses.push(axios.post(url, {
                     transaction:   transaction
-                });
+                }));
             }
         }
-        this.action_receivetransction(transaction);  // self
+        Promise.all(axioses).then(() => {
+            this.action_receivetransction(transaction);  // self
+        });
     }
 
     /**
@@ -207,7 +197,9 @@ class Node {
         let transaction = new Transaction();
         transaction.import(received_transaction);
         this.pending_transactions.push(transaction);
+        console.log("I am Node" + this.id + " HERE1");
         if (this.finished_transactions == true) {
+            console.log("I am Node" + this.id + " HERE");
             this.execute_pending_transactions();
         }
     }
@@ -220,10 +212,9 @@ class Node {
             this.finished_transactions = false;
             let transaction = this.pending_transactions.shift();
             this.execute_transaction(transaction);
-            //this.execute_pending_transactions();
         } else {
             this.finished_transactions = true;
-            if (this.started_creating_transactions) {
+            if (this.transaction_ended_replies == this.n) {
                 this.create_transactions();
             }
         }
@@ -245,30 +236,31 @@ class Node {
             last_block.transactions.push(transaction);
             // update UTXOs
             this.contacts[receiver_i].UTXO.push(transaction.transaction_outputs[0]);
-            this.contacts[sender_i].UTXO = [];
+            //this.contacts[sender_i].UTXO = [];
             this.contacts[sender_i].UTXO.push(transaction.transaction_outputs[1]);
             // mine new block if last_block is full
             if (last_block.transactions.length == this.blockchain.capacity) {
-                this.mine_block();
+                //this.mine_block(sender_i);
+                this.end_transaction(sender_i);
             } else {
-                this.end_transaction();
+                this.end_transaction(sender_i);
             }
         } else {
             console.log('I am Node' + this.id + ". Transaction is not valid");
-            this.end_transaction();
+            this.end_transaction(sender_i);
         }
     }
 
     /**
      * @memberof Node
      */
-    async mine_block() {
+    async mine_block(sender_i) {
         console.log('I am Node' + this.id + ". Started mining");
         let start_time = Date.now() / 1000;
         let newblock = new Block();
         newblock.init(this.blockchain.getLatestBlock().index+1, 0, this.blockchain.getLatestBlock().current_hash);
         this.blockchain.mineBlock(newblock).then((isBlockMined) => {
-            if (isBlockMined) {
+            //if (isBlockMined) {
                 let finish_time = Date.now() / 1000;
                 let block_time = (finish_time - start_time);
                 this.block_times.push(block_time);
@@ -276,9 +268,13 @@ class Node {
                 // if mining was successful
                 // broadcast block only if it hasn't received any during mining
                 if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
-                    this.broadcast_block(newblock);
+                    this.broadcast_block(newblock).then(() => {
+                        this.end_transaction(sender_i);
+                    });
+                } else {
+                    this.end_transaction(sender_i);
                 }
-            }
+            //}
         });
 
     }
@@ -296,7 +292,7 @@ class Node {
                 });
             }
         }
-        this.action_receiveblock(newblock);  // self
+        await this.action_receiveblock(newblock);  // self
     }
 
     /**
@@ -310,9 +306,8 @@ class Node {
         if (newblock.isValidated(this.blockchain.getLatestBlock().current_hash)) {
             console.log('I am Node' + this.id + ". Adding block with index " + newblock.index + " and current_hash " + newblock.current_hash);
             this.blockchain.chain.push(newblock);
-            this.end_transaction();
         } else {
-            this.resolve_conflict();
+            await this.resolve_conflict();
         }
     }
 
@@ -334,14 +329,27 @@ class Node {
                 }));
             }
         }
+        await Promise.all(axioses);
+    }
+
+    async end_transaction(sender_i) {
+        let axioses = [];
+        console.log('I am Node' + this.id + ". Ended transaction");
+        let url = "http://" + this.contacts[sender_i].ip + ":" + this.contacts[sender_i].port + "/backend/transactionended";
+        axioses.push(axios.post(url, {
+            sender_i: sender_i
+        }));
         Promise.all(axioses).then(() => {
-            this.end_transaction();
+            this.execute_pending_transactions();
         });
     }
 
-    async end_transaction() {
-        console.log('I am Node' + this.id + ". Ended transaction");
-        this.execute_pending_transactions();
+    async action_transactionended() {
+        this.transaction_ended_replies++;
+        console.log('I am Node' + this.id + ". Received transaction_ended_reply. Total " + this.transaction_ended_replies);
+        if (this.transaction_ended_replies == this.n) {
+            this.create_transactions();
+        }
     }
 
     /**
@@ -349,12 +357,24 @@ class Node {
      * @memberof Node
      */
     async read_file() {
-        this.start_time = Date.now()/1000;
-        this.started_creating_transactions = true;
-        if (this.finished_transactions) {
-            this.execute_pending_transactions();
+        // add transactions from file to list
+        let file = fs.readFileSync('data/transactions/'+this.n+'nodes/transactions'+this.id+'.txt', 'utf8');
+        const lines = file.split('\n');
+        for (let line of lines) {
+            line = line.trim();
+            if (line != "") {
+                let [receiver_id, amount] = line.split(' ');
+                receiver_id = parseInt(receiver_id.slice(2));
+                amount = parseInt(amount);
+                let transaction_to_create = {
+                    receiver_id: receiver_id,
+                    amount: amount
+                };
+                this.transactions_to_create.push(transaction_to_create);
+            }
         }
-        //this.create_transactions();
+        this.start_time = Date.now()/1000;
+        this.create_transactions();
     }
 
     /**

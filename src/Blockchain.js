@@ -88,9 +88,9 @@ class Blockchain {
     async mineBlock(block) {
         // while hash doesn't start with difficulty number of "0"
         while (!block.current_hash.startsWith(this.difficulty_string)) {
-            if (block.index != this.getLatestBlock().index+1) {
-                return false;   // if have received any other block
-            }
+            //if (block.index != this.getLatestBlock().index+1) {
+            //    return false;   // if have received any other block
+            //}
             block.nonce++;
             block.current_hash = block.calculateHash();
             await Utils.setImmediatePromise();

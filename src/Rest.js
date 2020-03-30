@@ -150,8 +150,9 @@ class Rest {
         });
         // gets activated when a transaction is broadcasted
         this.app.post('/backend/receivetransaction', (req, res) => {
-            res.send('I am Node' + this.node.id + ". Received Transaction");
-            this.node.action_receivetransction(req.body.transaction);
+            this.node.action_receivetransction(req.body.transaction).then(() => {
+                res.send('I am Node' + this.node.id + ". Received Transaction");
+            });
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/receiveblock', (req, res) => {
@@ -161,6 +162,11 @@ class Rest {
         // gets activated when a block is broadcasted
         this.app.post('/backend/askedblockchain', (req, res) => {
             res.send(this.node.blockchain.getProperties());
+        });
+        // broadcasted transaction ended
+        this.app.post('/backend/transactionended', (req, res) => {
+            res.send('I am Node' + this.node.id + ". Transaction ended");
+            this.node.action_transactionended();
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/readfile', (req, res) => {

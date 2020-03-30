@@ -120,9 +120,18 @@ class BootstrapNode extends Node {
      */
     async initialTransactions() {
         for (let id=1; id < this.contacts.length; id++) {
-            await this.create_transaction(this.contacts[id].publickey, 100);
+            let transaction_to_create = {
+                receiver_id: id,
+                amount: 100
+            };
+            this.transactions_to_create.push(transaction_to_create);
+            //await this.create_transaction(this.contacts[id].publickey, 100);
         }
-        console.log("Bootstrap node. Finished all initial transactions");
+        this.create_transactions();
+    }
+
+    async start_read_file() {
+        console.log("Bootstrap node. Finished initial transactions. Commanding to read_file");
         for (let id=0; id < this.contacts.length; id++) {   // other nodes
             let url = "http://" + this.contacts[id].ip + ":" + this.contacts[id].port + "/backend/readfile";
             axios.post(url, {});
