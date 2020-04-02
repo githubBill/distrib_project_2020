@@ -63,7 +63,7 @@ class BootstrapNode extends Node {
      * @memberof Node
      */
     action_receivecontact (id, contact_info) {
-        console.log('I am Node' + this.id + ". Got a new contact");
+        console.log('I am Node' + this.id + ". Received contact with id " + id);
         this.received_contacts += 1;
         this.contacts[id] = JSON.parse(JSON.stringify(contact_info));
         // when all nodes are active

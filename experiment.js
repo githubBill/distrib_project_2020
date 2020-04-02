@@ -36,7 +36,7 @@ function spawn_process(bootstrap_ip, bootstrap_port, ip, id, n, capacity, diffic
  * @param {number} difficulty
  */
 function spawn_nodes (bootstrap_ip, bootstrap_port, ip, n, capacity, difficulty) {
-    for (let id=1; id<n; id++) {
+    for (let id=0; id<n; id++) {
         spawn_process(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty);
     }
 }
@@ -46,13 +46,8 @@ if (process.argv.length == 5) {
     let bootstrap_port = 3000;
     let ip = "localhost";
     console.log("Running local experiment with n: " + n + " capacity: " + capacity + " difficulty: " + difficulty);
-    // spawn node0
-    let id = 0;
-    spawn_process(bootstrap_ip, bootstrap_port, ip, id, n, capacity, difficulty);
-    // spawn remaining nodes with delay
-    setTimeout(function(){
-        spawn_nodes(bootstrap_ip, bootstrap_port, ip, n, capacity, difficulty);
-    }, 10000);
+    // spawn nodes
+    spawn_nodes(bootstrap_ip, bootstrap_port, ip, n, capacity, difficulty);
 } else {
     console.log("Arguments: n capacity difficulty");
 }

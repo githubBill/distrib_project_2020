@@ -105,10 +105,16 @@ class Node {
     sendContact() {
         if (this.id != 0) {
             let url = "http://" + this.contacts[0].ip + ":" + this.contacts[0].port + "/backend/newnode";
-            axios.post(url, {
-                id:             this.id,
-                contact_info:   this.contacts[this.id]
-            });
+            const myaxios = () => {
+                axios.post(url, {
+                    id:             this.id,
+                    contact_info:   this.contacts[this.id]
+                }).catch(() => {
+                    console.log('I am Node' + this.id + ". Bootstrap node is not ready yet. Retrying.");
+                    setTimeout( myaxios, 3000);
+                });
+            };
+            myaxios();
         }
     }
 
