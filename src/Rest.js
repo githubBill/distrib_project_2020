@@ -15,7 +15,7 @@ class Rest {
     constructor(node) {
         this.node = node;   // reference to parent object
         this.app = express();
-        this.app.use(express.json());
+        this.app.use(express.json({ limit: '50mb', extended: true }));
 
         Object.seal(this);
     }
@@ -63,7 +63,15 @@ class Rest {
         });
         // shows node.contacts properties for debugging purposes
         this.app.get('/debug/contacts', (req, res) => {
-            res.send(this.node.getProperties().contacts);
+            let contacts = Array.from(this.node.contacts);
+            for (let id=0; id<contacts.length; id++) {
+                let balance=0;
+                for (let j=0; j<contacts[id].UTXO.length; j++) {
+                    balance += contacts[id].UTXO[j].amount;
+                }
+                contacts[id].balance = balance;
+            }
+            res.send(contacts);
         });
         // shows node.blockchain properties for debugging purposes
         this.app.get('/debug/blockchain', (req, res) => {
@@ -77,8 +85,8 @@ class Rest {
             let id = parseInt(req.query.id);
             let receiver_address = this.node.contacts[id].publickey;
             let amount = parseInt(req.query.amount);
-            this.node.create_transaction(receiver_address, amount);
             res.send("I am node" + this.node.id + ". Doing transaction to " + id + " with amount " + amount);
+            this.node.create_transaction(receiver_address, amount);
         });
         // view last transactions
         this.app.get('/view', (req, res) => {
@@ -115,7 +123,7 @@ class Rest {
         });
         // show measurements
         this.app.get('/measurements', (req, res) => {
-            let throughput = this.node.count_transactions/this.node.transactions_time;
+            let throughput = this.node.count_created_transactions/this.node.transactions_time;
             let total_block_time = 0;
             this.node.block_times.forEach(block_time => {
                 total_block_time += block_time;
@@ -123,7 +131,10 @@ class Rest {
             // mean block_time
             let block_time = total_block_time / this.node.block_times.length;
             let measurements_info = {
-                count_transactions: this.node.count_transactions,
+                count_created_transactions: this.node.count_created_transactions,
+                count_executed_transactions: this.node.count_executed_transactions,
+                start_time: this.node.start_time,
+                finish_time: this.node.finish_time,
                 transactions_time: this.node.transactions_time,
                 block_times: this.node.block_times,
                 throughput: throughput,
@@ -135,34 +146,40 @@ class Rest {
 
         // gets activated when all nodes have been created
         this.app.post('/backend/receivecontacts', (req, res) => {
+            res.send('I am Node' + this.node.id + ". Received contacts");
             console.log('I am Node' + this.node.id + ". Received contacts");
             this.node.action_receivecontacts(req.body.contacts);
-            res.send('I am Node' + this.node.id + ". Received contacts");
         });
         // gets activated when all nodes have been created
         this.app.post('/backend/receiveblockchain', (req, res) => {
+            res.send('I am Node' + this.node.id + ". Received Blockchain");
             console.log('I am Node' + this.node.id + ". Received Blockchain");
             this.node.action_receiveblockchain(req.body.blockchain);
-            res.send('I am Node' + this.node.id + ". Received Blockchain");
         });
         // gets activated when a transaction is broadcasted
         this.app.post('/backend/receivetransaction', (req, res) => {
-            this.node.action_receivetransction(req.body.transaction);
-            res.send('I am Node' + this.node.id + ". Received Transaction");
+            this.node.action_receivetransction(req.body.transaction).then(() => {
+                res.send('I am Node' + this.node.id + ". Received Transaction");
+            });
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/receiveblock', (req, res) => {
-            this.node.action_receiveblock(req.body.block);
             res.send('I am Node' + this.node.id + ". Received Block");
+            this.node.action_receiveblock(req.body.block);
         });
         // gets activated when a block is broadcasted
         this.app.post('/backend/askedblockchain', (req, res) => {
             res.send(this.node.blockchain.getProperties());
         });
+        // broadcasted transaction ended
+        this.app.post('/backend/transactionended', (req, res) => {
+            res.send('I am Node' + this.node.id + ". Transaction ended");
+            this.node.action_transactionended();
+        });
         // gets activated when a block is broadcasted
         this.app.post('/backend/readfile', (req, res) => {
-            this.node.read_file();
             res.send("read file");
+            this.node.read_file();
         });
 
 

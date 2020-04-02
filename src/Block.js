@@ -70,23 +70,10 @@ class Block {
         let blockdata = {
             index:          this.index,
             timestamp:      this.timestamp,
-            transactions:   this.transactions,
             nonce:          this.nonce,
             previous_hash:  this.previous_hash
         };
         return hash(blockdata);
-    }
-
-    /**
-     * @param {number} difficulty
-     * @memberof Block
-     */
-    mineBlock(difficulty) {
-        while (this.current_hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
-            this.nonce++;
-            this.current_hash = this.calculateHash();
-        }
-        console.log("BLOCK MINED: " + this.current_hash);
     }
 
     /**

@@ -50,11 +50,6 @@ class Transaction {
         this.transaction_id = this.hashTransaction();
         this.transaction_outputs = new Array(2);
 
-        let nbc_remaining = 0;
-        for (let i=this.transaction_inputs.length-1; i>=0; i--) {
-            nbc_remaining += this.transaction_inputs[i].amount;
-        }
-        nbc_remaining -= this.amount;
         this.transaction_outputs[0] = {
             id: this.transaction_id,
             recipient: this.receiver_address,
@@ -63,7 +58,7 @@ class Transaction {
         this.transaction_outputs[1] = {
             id: this.transaction_id,
             recipient: this.sender_address,
-            amount: nbc_remaining
+            amount: -this.amount
         };
         this.signature = this.signTransaction(privatekey);
     }
@@ -143,7 +138,14 @@ class Transaction {
         if (hash(transctiondata) != this.transaction_id) {
             check = false;
         }
-        if (this.transaction_outputs[1].amount < 0) {
+
+        let nbc_remaining = 0;
+        for (let i=this.transaction_inputs.length-1; i>=0; i--) {
+            nbc_remaining += this.transaction_inputs[i].amount;
+        }
+        nbc_remaining -= this.amount;
+        //if (this.transaction_outputs[1].amount < 0) {
+        if (nbc_remaining < 0) {
             check = false;
         }
         return check;
